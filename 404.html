@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Страница не найдена — Okat.kg</title>
+    <script>
+      // На github.io сайт живёт в подпапке с именем репозитория, на своём домене — в корне.
+      var seg = location.pathname.split('/')[1] || '';
+      var home = /\.github\.io$/.test(location.hostname) && seg ? '/' + seg + '/' : '/';
+      location.replace(home);
+    </script>
+  </head>
+  <body>
+    <p>Такой страницы нет. <a href="./">На главную</a></p>
+  </body>
+</html>

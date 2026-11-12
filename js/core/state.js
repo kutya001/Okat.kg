@@ -1,0 +1,26 @@
+'use strict';
+/* ================= СОСТОЯНИЕ ================= */
+const S = {
+  started: false,
+  role: 'client',
+  time: '08:40',
+  me: { name: 'Азамат', phone: '+996 555 12 34 56', pointId: 'p1' },
+  ctab: 'home',
+  cview: null,
+  typeFilter: 'all',
+  carts: {},
+  co: { comment: '', pay: null },
+  lastOrder: null,
+  kid: 'k1',
+  kw: 'full',
+  ktab: 'dash',
+  kst: 'request',
+  kpoint: 'all',
+  kview: 'board',
+  ktf: 'all',
+  ksort: 'num',
+  mdoc: null,
+  rep: '7',
+  sheet: null,
+  map: { client: null, kitchen: null, sel: null, real: null, prov: null },
+};

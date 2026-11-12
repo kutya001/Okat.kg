@@ -1,0 +1,352 @@
+/* ---------- базовые элементы ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  transition:
+    transform 0.12s,
+    background-color 0.12s;
+}
+.btn:active,
+.chip:active,
+.rbtn:active,
+.addbtn:active,
+.cartbtn:active {
+  transform: scale(0.97);
+}
+.btn.pri {
+  background: var(--accent);
+  color: #fff;
+}
+.btn.ok {
+  background: var(--ok);
+  color: #fff;
+}
+.btn.sec {
+  background: var(--fill);
+}
+.btn.ghost {
+  color: var(--ink2);
+}
+.btn.warn {
+  color: var(--bad);
+}
+.btn.sm {
+  min-height: 38px;
+  padding: 0 13px;
+  font-size: 14px;
+  border-radius: 12px;
+}
+.btn.big {
+  min-height: 56px;
+  font-size: 17px;
+  border-radius: 18px;
+}
+.btn.block {
+  width: 100%;
+}
+.btn[disabled] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.rbtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: transform 0.12s;
+}
+.rbtn.acc {
+  background: var(--accent);
+  color: #fff;
+}
+.rbtn.on {
+  background: var(--ink);
+  color: #fff;
+}
+.rbtn.fill {
+  background: var(--fill);
+}
+.chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+.chip {
+  flex: none;
+  padding: 0 14px;
+  min-height: 36px;
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.12s;
+}
+.chip.on {
+  background: var(--ink);
+  color: #fff;
+}
+.chip b {
+  font-weight: 500;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+.tagc {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--ink2);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tagc.ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.tagc.warn {
+  background: var(--warn-soft);
+  color: var(--warn-ink);
+}
+.tagc.bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.st-request.pill {
+  background: var(--warn-soft);
+  color: var(--warn-ink);
+}
+.st-confirmed.pill {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.st-cooking.pill,
+.st-delivering.pill {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.st-delivered.pill {
+  background: var(--fill2);
+  color: var(--ink2);
+}
+.st-rejected.pill,
+.st-cancelled.pill {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.ava {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--fill);
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+  flex: none;
+}
+.ph {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--fill);
+  overflow: hidden;
+  line-height: 1;
+}
+.ph img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ph.em {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  font-size: 20px;
+  flex: none;
+}
+.sw {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 28px;
+  flex: none;
+}
+.sw input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+}
+.sw i {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: #cdd1d8;
+  transition: background 0.15s;
+  pointer-events: none;
+}
+.sw i::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+.sw input:checked + i {
+  background: var(--ok);
+}
+.sw input:checked + i::after {
+  transform: translateX(18px);
+}
+.fld {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.fld > small {
+  font-size: 13px;
+  color: var(--ink2);
+}
+.fld input,
+.fld select,
+.fld textarea,
+.cmt {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 13px;
+  border: 1.5px solid transparent;
+  background: var(--fill);
+  padding: 9px 12px;
+  font-size: 15px;
+}
+.fld textarea {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.35;
+}
+.fld input:focus,
+.fld select:focus,
+.fld textarea:focus,
+.cmt:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--card);
+}
+.fld input:disabled,
+.fld textarea:disabled {
+  color: var(--ink2);
+}
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--fill);
+  border-radius: 13px;
+  padding: 3px;
+  flex: none;
+}
+.step button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+}
+.step span {
+  min-width: 44px;
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.step.big {
+  align-self: flex-start;
+}
+.step.big button {
+  width: 46px;
+  height: 46px;
+}
+.step.big span {
+  min-width: 64px;
+  font-size: 19px;
+}
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tab-h) + 20px);
+  transform: translate(-50%, 14px);
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 16px;
+  border-radius: 14px;
+  max-width: min(92vw, 420px);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s;
+  z-index: 100;
+}
+#toast.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.enter {
+  animation: viewin 0.18s ease-out;
+}
+@keyframes viewin {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+}

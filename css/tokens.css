@@ -1,0 +1,95 @@
+:root {
+  --bg: #f3f4f6;
+  --card: #fff;
+  --fill: #f1f2f4;
+  --fill2: #e7e9ed;
+  --ink: #17191e;
+  --ink2: #5e6470;
+  --ink3: #9ba1ac;
+  --line: #ecedf0;
+  --accent: #2f5bea;
+  --accent-soft: #e9eeff;
+  --ok: #14995a;
+  --ok-soft: #e3f6ec;
+  --warn: #f0a515;
+  --warn-soft: #fff4d9;
+  --warn-ink: #7a5200;
+  --bad: #e5484d;
+  --bad-soft: #fdecec;
+  --demo-h: 40px;
+  --tab-h: 58px;
+  --font: 'Golos Text', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+body.lock {
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+ul,
+ol {
+  list-style: none;
+}
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.ic {
+  flex: none;
+  display: block;
+}
+.muted {
+  color: var(--ink3);
+  font-size: 13.5px;
+}
+.empty {
+  color: var(--ink3);
+  font-size: 14px;
+  padding: 18px 6px;
+  text-align: center;
+}
+:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.only-d,
+.nav-logo {
+  display: none !important;
+}

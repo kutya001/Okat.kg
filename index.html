@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F3F4F6" />
+    <meta
+      name="description"
+      content="Okat.kg — обеды на работу в Бишкеке: меню кухонь на сегодня, заявка до 10:00, доставка к обеду."
+    />
+    <title>Okat.kg — обеды на работу</title>
+
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- Стили: порядок важен, адаптив подключается последним -->
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/demo.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/client.css" />
+    <link rel="stylesheet" href="css/map.css" />
+    <link rel="stylesheet" href="css/sheets.css" />
+    <link rel="stylesheet" href="css/kitchen.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+
+    <!-- Скрипты без сборки: обычные файлы с общей областью видимости, порядок = порядок загрузки -->
+    <script defer src="assets/vendor/leaflet/leaflet.js"></script>
+    <!-- Помощники и данные -->
+    <script defer src="js/core/utils.js"></script>
+    <script defer src="js/data/dictionaries.js"></script>
+    <script defer src="js/data/places.js"></script>
+    <script defer src="js/data/dishes.js"></script>
+    <script defer src="js/data/menus.js"></script>
+    <script defer src="js/core/state.js"></script>
+    <script defer src="js/data/orders.js"></script>
+    <script defer src="js/data/seed.js"></script>
+    <script defer src="js/data/history.js"></script>
+    <!-- Иконки и карта -->
+    <script defer src="js/core/icons.js"></script>
+    <script defer src="js/map/pins.js"></script>
+    <script defer src="js/map/real.js"></script>
+    <script defer src="js/map/scheme.js"></script>
+    <script defer src="js/map/map.js"></script>
+    <!-- Ядро: отрисовка, события, история браузера, общие действия -->
+    <script defer src="js/core/app.js"></script>
+    <script defer src="js/core/history.js"></script>
+    <script defer src="js/core/actions.js"></script>
+    <!-- Экраны клиента -->
+    <script defer src="js/client/welcome.js"></script>
+    <script defer src="js/client/shell.js"></script>
+    <script defer src="js/client/home.js"></script>
+    <script defer src="js/client/menu.js"></script>
+    <script defer src="js/client/cart.js"></script>
+    <script defer src="js/client/orders.js"></script>
+    <script defer src="js/client/profile.js"></script>
+    <script defer src="js/client/map.js"></script>
+    <script defer src="js/client/points.js"></script>
+    <script defer src="js/client/actions.js"></script>
+    <!-- Кабинет кухни -->
+    <script defer src="js/kitchen/shell.js"></script>
+    <script defer src="js/kitchen/dashboard.js"></script>
+    <script defer src="js/kitchen/orders.js"></script>
+    <script defer src="js/kitchen/orders-dnd.js"></script>
+    <script defer src="js/kitchen/menu.js"></script>
+    <script defer src="js/kitchen/dishes.js"></script>
+    <script defer src="js/kitchen/reports.js"></script>
+    <script defer src="js/kitchen/profile.js"></script>
+    <!-- Запуск -->
+    <script defer src="js/main.js"></script>
+  </head>
+  <body data-role="client">
+    <div id="app"></div>
+    <div id="sheet-root"></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <noscript>Для работы Okat.kg включите JavaScript.</noscript>
+  </body>
+</html>
