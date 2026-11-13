@@ -30,7 +30,8 @@ function mkOrder(a) {
     total: sum + fee,
     pay: a.pay,
     paid: !!a.paid,
-    receipt: false,
+    receipt: a.receipt || null, // чек об оплате: { img, t }; img пустой — демонстрационный чек
+    check: a.receipt ? a.check || 'wait' : '', // проверка чека кухней: wait — ждёт, ok — принят, bad — отклонён
     comment: a.comment || '',
     status: a.status,
     t: a.t,
@@ -55,6 +56,17 @@ function qtyBy(kid, dishId, pred) {
   for (const o of ORDERS)
     if (o.day === 0 && o.kid === kid && pred(o)) for (const i of o.items) if (i.dishId === dishId) q += i.qty;
   return q;
+}
+/* заявку с переводом нельзя принять, пока кухня не посмотрела чек */
+const needsCheck = o => o.status === 'request' && o.pay !== 'cash' && o.check !== 'ok';
+/* картинка чека; у демо-заказов настоящего файла нет — рисуем условный образец */
+function receiptSrc(o) {
+  if (o.receipt && o.receipt.img) return o.receipt.img;
+  const k = kitchen(o.kid),
+    row = (y, l, v) =>
+      `<text x="28" y="${y}" font-size="15" fill="#8a909c">${l}</text><text x="292" y="${y}" font-size="15" font-weight="600" text-anchor="end" fill="#17191e">${esc(v)}</text>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" font-family="system-ui,sans-serif"><rect width="320" height="400" fill="#fff"/><text x="160" y="52" font-size="13" font-weight="700" text-anchor="middle" fill="#8a909c" >Демо-чек</text><circle cx="160" cy="104" r="26" fill="#e3f6ec"/><path d="m148 104 8 8 16-17" fill="none" stroke="#14995a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text x="160" y="170" font-size="30" font-weight="700" text-anchor="middle" fill="#17191e">${fmt(o.total)} сом</text><path d="M28 198h264" stroke="#ecedf0" stroke-width="2"/>${row(236, 'Способ', PAY[o.pay].s)}${row(268, 'Получатель', k.payTo.name)}${row(300, 'Отправитель', o.clientName)}${row(332, 'Время', o.receipt ? o.receipt.t : o.t)}<text x="160" y="376" font-size="12" text-anchor="middle" fill="#b3b8c2">Образец для прототипа, не платёжный документ</text></svg>`;
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 const taken = (kid, dishId) => qtyBy(kid, dishId, isActive);
 function dishFromPoint(kid, pid) {

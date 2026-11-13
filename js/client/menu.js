@@ -1,18 +1,40 @@
 'use strict';
 /* ---------- меню заведения ---------- */
+/* кнопка с ценой; после первого нажатия превращается в счётчик порций */
+function addCtl(i, q, can) {
+  const d = i.dish,
+    out = i.left <= 0,
+    a = `data-k="${d.kid}" data-id="${d.id}"`;
+  return q > 0
+    ? `<div class="stepper"><button data-act="sub" ${a} aria-label="Убрать одну порцию">${ic('minus', 18)}</button><span>${q}</span><button data-act="add" ${a} ${!can || q >= i.left ? 'disabled' : ''} aria-label="Добавить ещё порцию">${ic('plus', 18)}</button></div>`
+    : !can
+      ? `<span class="addbtn off">${som(i.price)}</span>`
+      : `<button class="addbtn" data-act="add" ${a} ${out ? 'disabled' : ''} aria-label="${esc(d.name)}, ${som(i.price)}. Добавить">${out ? 'Закончилось' : `<span>${som(i.price)}</span>${ic('plus', 18)}`}</button>`;
+}
 function dishCard(i, q, can, hot) {
   const d = i.dish,
     out = i.left <= 0,
-    a = `data-k="${d.kid}" data-id="${d.id}"`,
-    sub = d.w || d.desc;
-  const ctl =
-    q > 0
-      ? `<div class="stepper"><button data-act="sub" ${a} aria-label="Убрать одну порцию">${ic('minus', 18)}</button><span>${q}</span><button data-act="add" ${a} ${!can || q >= i.left ? 'disabled' : ''} aria-label="Добавить ещё порцию">${ic('plus', 18)}</button></div>`
-      : !can
-        ? `<span class="addbtn off">${som(i.price)}</span>`
-        : `<button class="addbtn" data-act="add" ${a} ${out ? 'disabled' : ''} aria-label="${esc(d.name)}, ${som(i.price)}. Добавить">${out ? 'Закончилось' : `<span>${som(i.price)}</span>${ic('plus', 18)}`}</button>`;
-  return `<article class="dcard">${ph(d, '', (hot >= 2 ? `<span class="bd t">${ic('users', 13)}${hot}</span>` : '') + (!out && i.left <= 5 ? `<span class="bd b">осталось ${i.left}</span>` : ''))}<b>${esc(d.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}${ctl}</article>`;
+    sub = dishMeta(d) || d.desc;
+  return `<article class="dcard"><button class="dc-b" data-act="cdish" data-k="${d.kid}" data-id="${d.id}" aria-label="${esc(d.name)}: подробнее">${ph(d, '', (hot >= 2 ? `<span class="bd t">${ic('users', 13)}${hot}</span>` : '') + (!out && i.left <= 5 ? `<span class="bd b">осталось ${i.left}</span>` : ''))}<b>${esc(d.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</button>${addCtl(i, q, can)}</article>`;
 }
+/* шторка блюда: фото, описание, калории и БЖУ, метки, кнопка заказа */
+SHEETS.cdish = () => {
+  const i = menuItems(S.sheet.k).find(x => x.dishId === S.sheet.id),
+    k = kitchen(S.sheet.k);
+  if (!i) return `<h2>Блюда уже нет в меню</h2><button class="btn block sec" data-act="closeSheet">Закрыть</button>`;
+  const d = i.dish,
+    can = winState(k) === 'open' && MENU[k.id].today.published,
+    q = (S.carts[k.id] || {})[d.id] || 0,
+    nut = d.kcal != null || d.p != null,
+    cell = (v, u, l) => (v == null ? '' : `<div><b>${v}${u}</b><small>${l}</small></div>`);
+  return `<div class="ds-ph">${ph(d)}</div>
+  <h2 class="ds-n">${esc(d.name)}</h2>
+  <p class="ds-meta">${[d.w, esc(k.name)].filter(Boolean).join(' · ')}</p>
+  ${d.desc ? `<p class="ds-desc">${esc(d.desc)}</p>` : ''}
+  ${nut ? `<div class="nutr" aria-label="На порцию">${cell(d.kcal, '', 'ккал')}${cell(d.p, ' г', 'белки')}${cell(d.f, ' г', 'жиры')}${cell(d.c, ' г', 'углеводы')}</div>` : ''}
+  ${d.tags && d.tags.length ? `<div class="ds-tags">${d.tags.map(t => `<span class="tagc ok">${TAGS[t]}</span>`).join('')}</div>` : ''}
+  <div class="ds-buy">${addCtl(i, q, can)}${q > 0 ? `<button class="btn pri" data-act="checkout" data-id="${k.id}">В корзину</button>` : ''}</div>`;
+};
 function cKitchen(id) {
   const k = kitchen(id),
     m = MENU[id].today,

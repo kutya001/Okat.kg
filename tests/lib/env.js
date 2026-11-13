@@ -12,4 +12,7 @@ fs.mkdirSync(SHOTS, { recursive: true });
 
 const launch = () => chromium.launch({ executablePath: process.env.CHROME_PATH || undefined, args: ['--no-sandbox'] });
 
-module.exports = { URL, SHOTS, launch };
+// картинка «чека» для загрузки в форму
+const receiptFile = () => ({ name: 'check.png', mimeType: 'image/png', buffer: require('./tile.js')() });
+
+module.exports = { URL, SHOTS, launch, receiptFile };

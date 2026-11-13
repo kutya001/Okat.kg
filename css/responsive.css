@@ -411,3 +411,16 @@
     transition: none !important;
   }
 }
+/* на компьютере нижнего меню нет — корзина главной прижимается к низу окна */
+@media (min-width: 900px) {
+  .cartbar.home {
+    bottom: 0;
+    padding-bottom: 18px;
+  }
+  .c-shell:has(.cartbar.home) {
+    padding-bottom: 110px;
+  }
+  body:has(.cartbar) #toast {
+    bottom: 96px;
+  }
+}

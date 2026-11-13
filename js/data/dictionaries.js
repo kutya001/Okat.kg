@@ -21,6 +21,16 @@ const PAY = {
   odengi: { s: 'О!Деньги', l: 'Перевод О!Деньги' },
   bakai: { s: 'Bakai', l: 'Перевод Bakai' },
 };
+/* метки пользы: кухня отмечает их в карточке блюда сама */
+const TAGS = {
+  light: 'Лёгкое',
+  protein: 'Много белка',
+  fiber: 'Клетчатка',
+  veg: 'Без мяса',
+  steam: 'Без жарки',
+  nosugar: 'Без сахара',
+  spicy: 'Острое',
+};
 const STATUS = {
   request: 'Заявка',
   confirmed: 'Принят',

@@ -11,7 +11,7 @@ function clientApp() {
     body = { home: cHome, map: cMap, orders: cOrders, profile: cProfile }[S.ctab]();
     cls = S.ctab === 'map' ? 'is-map' : S.ctab === 'home' ? '' : 'narrow';
   }
-  return `<div class="c-app">${S.cview ? '' : cNav()}<div class="c-shell ${cls} ${S.cview ? 'detail' : ''}">${body}</div></div>`;
+  return `<div class="c-app">${S.cview ? '' : cNav()}<div class="c-shell ${cls} ${S.cview ? 'detail' : ''}" data-key="${viewKey()}">${body}</div></div>`;
 }
 function cNav() {
   const act = ORDERS.filter(

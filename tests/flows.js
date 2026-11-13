@@ -1,6 +1,6 @@
 'use strict';
 // Сценарии: заявка → подтверждение → чек, отказ, меню по дням, блюда, лимиты, карта.
-const { URL, SHOTS, launch } = require('./lib/env.js');
+const { URL, SHOTS, launch, receiptFile } = require('./lib/env.js');
 const assert = (c, m) => {
   if (!c) {
     console.log('FAIL: ' + m);
@@ -23,16 +23,27 @@ const assert = (c, m) => {
   await p.goto(URL);
   await p.waitForTimeout(300);
   const c = s => p.locator(s).first().click(),
-    ev = f => p.evaluate(f);
+    ev = (f, a) => p.evaluate(f, a);
   await c('[data-act=start][data-role=client]');
   assert((await ev(() => pointStats('p1').total)) === 21, 'seed: 21 person from p1');
   // order in kitchen with delivery fee & free threshold (k3: 3 orders from p1, freeFrom 5 -> fee 50)
-  await c('.rcard[data-id=k3]');
+  await c('.rc-h[data-id=k3]');
   await c('[data-act=add][data-id=k3d1]');
   await c('[data-act=checkout]');
   assert((await p.locator('.totals').innerText()).includes('50'), 'k3 delivery fee 50 shown');
   await c('[data-act=pay][data-p=mbank]');
+  assert((await p.locator('.pb-to').innerText()).includes('+996 770 11 22 33'), 'transfer details shown');
+  assert((await p.locator('[data-act=submit]').count()) === 0, 'cannot send a transfer request without a receipt');
+  await p.locator('[data-chg=coReceipt]').first().setInputFiles(receiptFile());
+  await p.waitForSelector('.pb-r');
   await c('[data-act=submit]');
+  assert(
+    (await ev(() => {
+      const o = ORDERS.find(o => o.clientId === 'me' && o.day === 0);
+      return o.check === 'wait' && o.receipt.img.startsWith('data:image/') && !o.paid;
+    })) === true,
+    'request carries the receipt, waits for check'
+  );
   assert(
     (await ev(() => pointStats('p1').by.k3)) === 4 && (await ev(() => pointStats('p1').total)) === 22,
     'counter grew after own request'
@@ -41,16 +52,50 @@ const assert = (c, m) => {
   // kitchen confirms -> client sees confirmed + receipt
   await c('[data-act=role][data-role=kitchen]');
   await c('.k-tabbar [data-tab=orders]');
-  await p.locator('.tkt', { hasText: 'Азамат' }).locator('[data-act=ordNext]').click();
+  const mine = () => p.locator('.tkt', { hasText: 'Азамат' });
+  assert((await mine().locator('[data-act=ordNext]').count()) === 0, 'no plain accept for a transfer request');
+  // кухня отклоняет чек → клиент присылает новый → кухня принимает
+  await mine().locator('.btn[data-act=rcpt]').click();
+  assert((await p.locator('.sheet .rcpt img').count()) === 1, 'kitchen opens the receipt');
+  await c('[data-act=rcptBad]');
+  assert((await mine().innerText()).includes('Ждём новый чек'), 'kitchen waits for a new receipt');
   await c('[data-act=role][data-role=client]');
-  assert((await p.locator('.ord').first().innerText()).includes('Заказ принят'), 'client sees confirmed');
-  await c('[data-act=receipt]');
+  assert((await p.locator('.ord').first().innerText()).includes('Нужен новый чек'), 'client asked for a new receipt');
+  await p.locator('[data-chg=reReceipt]').setInputFiles(receiptFile());
+  await p.waitForFunction(() => ORDERS.find(o => o.clientId === 'me' && o.day === 0).check === 'wait');
+  assert((await p.locator('.ord').first().innerText()).includes('Чек на проверке'), 'new receipt sent');
   await c('[data-act=role][data-role=kitchen]');
-  await c('[data-act=kst][data-st=confirmed]');
-  const t = p.locator('.tkt', { hasText: 'Азамат' });
-  assert((await t.innerText()).includes('чек'), 'kitchen sees receipt flag');
-  await t.locator('[data-act=ordPaid]').click();
-  assert((await ev(() => ORDERS.find(o => o.clientId === 'me' && o.day === 0).paid)) === true, 'paid toggled');
+  await mine().locator('.btn[data-act=rcpt]').click();
+  await c('[data-act=rcptOk]');
+  assert(
+    (await ev(() => {
+      const o = ORDERS.find(o => o.clientId === 'me' && o.day === 0);
+      return o.status === 'confirmed' && o.paid && o.check === 'ok';
+    })) === true,
+    'receipt accepted: order confirmed and paid'
+  );
+  await c('[data-act=role][data-role=client]');
+  const mineCard = await p.locator('.ord').first().innerText();
+  assert(mineCard.includes('Заказ принят') && mineCard.includes('Оплачен'), 'client sees confirmed and paid');
+  await c('[data-act=role][data-role=kitchen]');
+  // наличные: заявку принимают без чека, оплату отмечают вручную
+  const cash = await ev(() => {
+    const o = ORDERS.find(
+      o => o.kid === 'k3' && o.day === 0 && o.pay === 'cash' && ['request', 'confirmed'].includes(o.status)
+    );
+    return o && { id: o.id, st: o.status };
+  });
+  if (!cash) console.log('FAIL: no cash order of k3 in demo data');
+  else {
+    if (cash.st === 'request') {
+      await c('[data-act=kst][data-st=request]');
+      await c(`.tkt[data-id=${cash.id}] [data-act=ordNext]`);
+      assert((await ev(id => order(id).status, cash.id)) === 'confirmed', 'cash request accepted without a receipt');
+    }
+    await c('[data-act=kst][data-st=confirmed]');
+    await c(`[data-act=ordPaid][data-id=${cash.id}]`);
+    assert((await ev(id => order(id).paid, cash.id)) === true, 'cash marked as paid by hand');
+  }
   // reject flow on another request
   await c('[data-act=kst][data-st=request]');
   const before = await ev(() => kStats('k3').req.length);
@@ -161,9 +206,9 @@ const assert = (c, m) => {
   // client: price change visible, free delivery now, cancel flow, repeat, change point
   await c('[data-act=role][data-role=client]');
   await c('.tabbar [data-tab=home]');
-  assert((await p.locator('.rcard[data-id=k3]').innerText()).includes('333'), 'client sees new price');
-  assert((await p.locator('.rcard[data-id=k3]').innerText()).includes('бесплатно'), 'free delivery reached');
-  await c('.rcard[data-id=k1]');
+  assert((await p.locator('.rcard[data-key=rc-k3]').innerText()).includes('333'), 'client sees new price');
+  assert((await p.locator('.rcard[data-key=rc-k3]').innerText()).includes('бесплатно'), 'free delivery reached');
+  await c('.rc-h[data-id=k1]');
   await c('[data-act=add][data-id=k1d5]');
   await c('[data-act=add][data-id=k1d5]');
   assert((await ev(() => S.carts.k1.k1d5)) === 2, 'manty: 2 in cart (only 2 left)');

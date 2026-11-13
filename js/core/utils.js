@@ -63,3 +63,23 @@ const MON = [
   'декабря',
 ];
 const dateLong = d => d.getDate() + ' ' + MON[d.getMonth()];
+/* читает выбранную картинку, уменьшает до max пикселей по длинной стороне и отдаёт как data-URL */
+function readImage(file, max, done, fail) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)),
+        cv = document.createElement('canvas');
+      cv.width = Math.round(im.width * k);
+      cv.height = Math.round(im.height * k);
+      cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+      done(cv.toDataURL('image/jpeg', 0.82));
+    };
+    im.onerror = fail;
+    im.src = rd.result;
+  };
+  rd.onerror = fail;
+  rd.readAsDataURL(file);
+}

@@ -17,6 +17,8 @@ function kProfile(k) {
           `<label><input type="checkbox" data-chg="kpay" data-p="${id}" ${k.pay.includes(id) ? 'checked' : ''}><span class="chip">${p.s}</span></label>`
       )
       .join('')}</div></div>
+    <label class="fld"><small>Номер для переводов</small><input type="tel" value="${esc(k.payTo.num)}" data-chg="kpayTo" data-f="num"></label>
+    <label class="fld"><small>Получатель</small><input value="${esc(k.payTo.name)}" data-chg="kpayTo" data-f="name" placeholder="Как в банковском приложении"></label>
   </div></section>
   <section class="card"><div class="card-h"><h2>Время для новых меню</h2></div><div class="ae-row" style="margin:0">${[
     ['from', 'Заявки с'],
@@ -36,6 +38,12 @@ C.kf = (d, el) => {
   k[d.f] = ['fee', 'freeFrom', 'min'].includes(d.f)
     ? Math.max(0, Math.round(+el.value || 0))
     : el.value.trim() || k[d.f];
+  toast('Сохранено');
+  render();
+};
+C.kpayTo = (d, el) => {
+  const k = kitchen(S.kid);
+  k.payTo[d.f] = el.value.trim() || k.payTo[d.f];
   toast('Сохранено');
   render();
 };

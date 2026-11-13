@@ -334,19 +334,42 @@
   opacity: 1;
   transform: translate(-50%, 0);
 }
-.enter {
-  animation: viewin 0.18s ease-out;
+/* плавность: состояние элемента меняется переходом, а не скачком */
+button,
+a,
+label {
+  touch-action: manipulation;
 }
-@keyframes viewin {
-  from {
-    opacity: 0;
-  }
+.chip,
+.tagc,
+.tkt-pay,
+.seg button,
+.vseg button,
+.mseg button,
+.wseg button,
+.tabbar button,
+.k-nav,
+.li,
+.row,
+.rbtn,
+.addbtn,
+.cartbtn,
+.stsel,
+.pill {
+  transition:
+    background-color 0.18s,
+    color 0.18s,
+    box-shadow 0.18s,
+    opacity 0.18s,
+    transform 0.12s;
 }
-@keyframes pop {
-  0% {
-    transform: scale(0.6);
-  }
-  60% {
-    transform: scale(1.15);
-  }
+.segs i {
+  transition: background-color 0.45s;
+}
+.ph {
+  transition: transform 0.15s;
+}
+.mini-b:active .ph,
+.dc-b:active .ph {
+  transform: scale(0.97);
 }

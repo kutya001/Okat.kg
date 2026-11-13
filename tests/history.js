@@ -35,7 +35,7 @@ const assert = (c, m) => {
       );
 
   await c('[data-act=start][data-role=client]');
-  await c('.rcard[data-id=k1]');
+  await c('.rc-h[data-id=k1]');
   await c('[data-act=add][data-id=k1d1]');
   await c('[data-act=checkout]');
   assert((await view()) === 'checkout', 'opened cart');
@@ -50,12 +50,12 @@ const assert = (c, m) => {
   assert((await view()) === 'home', 'Forward: welcome -> home');
 
   // кнопка «назад» в интерфейсе не плодит записи
-  await c('.rcard[data-id=k1]');
+  await c('.rc-h[data-id=k1]');
   const len = await ev(() => history.length);
   await c('[data-act=back]');
   await p.waitForTimeout(200);
   assert((await view()) === 'home', 'in-app back -> home');
-  await c('.rcard[data-id=k1]');
+  await c('.rc-h[data-id=k1]');
   await p.waitForTimeout(100);
   assert((await ev(() => history.length)) === len, 'in-app back keeps history tidy');
 
@@ -69,7 +69,7 @@ const assert = (c, m) => {
   assert((await p.locator('.sheet').count()) === 0, 'sheet removed from the page');
 
   // после отправки заявки «Назад» не возвращает в пустую корзину
-  await c('.rcard[data-id=k1]');
+  await c('.rc-h[data-id=k1]');
   await c('[data-act=checkout]');
   await c('[data-act=submit]');
   assert((await view()) === 'orders', 'request sent -> orders');

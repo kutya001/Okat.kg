@@ -1,6 +1,6 @@
 'use strict';
 // Проходит по всем экранам на телефоне и компьютере: ошибки в консоли, горизонтальная прокрутка, снимки экранов.
-const { URL, SHOTS, launch } = require('./lib/env.js');
+const { URL, SHOTS, launch, receiptFile } = require('./lib/env.js');
 const tile = require('./lib/tile.js')();
 const path = URL,
   out = SHOTS;
@@ -41,12 +41,25 @@ const path = URL,
     await c('[data-act=start][data-role=client]');
     await ov('home');
     await shot('home');
-    await c('.rcard[data-id=k1]');
+    // заказ прямо из карточки заведения: лента блюд, шторка блюда, корзина на главной
+    await c('.rcard[data-key=rc-k1] [data-act=add][data-id=k1d1]');
+    await c('.rcard[data-key=rc-k1] [data-act=cdish][data-id=k1d4]');
+    await ov('dish-sheet');
+    await shot('dish-sheet');
+    await c('.sheet [data-act=add]');
+    await c('[data-act=closeSheet]');
+    await ov('home-cart');
+    await shot('home-cart');
+    await c('.rc-h[data-id=k1]');
     await ov('kitchen');
-    await c('[data-act=add][data-id=k1d1]');
     await c('[data-act=add][data-id=k1d12]');
     await shot('kitchen');
     await c('[data-act=checkout]');
+    await c('[data-act=pay][data-p=mbank]');
+    await ov('checkout-pay');
+    await shot('checkout-pay');
+    await p.locator('[data-chg=coReceipt]').first().setInputFiles(receiptFile());
+    await p.waitForSelector('.pb-r');
     await ov('checkout');
     await shot('checkout');
     await c('[data-act=submit]');
@@ -73,6 +86,19 @@ const path = URL,
       await ov('k-' + t);
       await shot('k-' + t);
     }
+    await nav('orders');
+    await c('.btn[data-act=rcpt]');
+    await ov('k-receipt');
+    await shot('k-receipt');
+    await c('[data-act=closeSheet]');
+    await p.waitForTimeout(250);
+    await nav('menu');
+    await nav('dishes');
+    await c('[data-act=dishEdit]');
+    await ov('k-dish-form');
+    await shot('k-dish-form');
+    await c('[data-act=closeSheet]');
+    await p.waitForTimeout(250);
     await nav('orders');
     await c('[data-act=kview][data-v=table]');
     await ov('k-table');

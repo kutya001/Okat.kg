@@ -409,6 +409,14 @@
   background: var(--ok-soft);
   color: var(--ok);
 }
+.tkt-pay.chk {
+  background: var(--warn-soft);
+  color: var(--warn-ink);
+}
+.tkt-pay.bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
 .tkt-c {
   margin-top: 8px;
   display: flex;

@@ -98,7 +98,11 @@
     .sort((a, b) => a.tm - b.tm)
     .forEach(a => {
       a.status = a.tm < 485 ? 'confirmed' : 'request';
-      a.paid = a.status === 'confirmed' && a.pay !== 'cash' && a.rnd < 0.6;
+      if (a.pay !== 'cash') {
+        a.receipt = { img: '', t: minToT(a.tm + 2) };
+        a.check = a.status === 'confirmed' ? 'ok' : 'wait';
+      }
+      a.paid = a.status === 'confirmed' && a.pay !== 'cash';
       const o = mkOrder(a);
       if (a.status === 'confirmed') o.log.push(['confirmed', minToT(a.tm + 4)]);
     });

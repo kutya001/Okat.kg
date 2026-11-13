@@ -5,7 +5,7 @@
   "description": "Okat.kg — обеды на работу: прототип платформы заказа обедов (статический сайт без сборки)",
   "scripts": {
     "start": "python3 -m http.server 8080",
-    "test": "node tests/smoke.js && node tests/flows.js && node tests/map.js && node tests/history.js",
+    "test": "node tests/smoke.js && node tests/flows.js && node tests/map.js && node tests/history.js && node tests/features.js",
     "format": "prettier --write \"js/**/*.js\" \"css/*.css\" \"tests/**/*.js\" index.html"
   },
   "devDependencies": {

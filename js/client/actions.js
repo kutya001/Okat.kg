@@ -33,7 +33,9 @@ A.add = d => {
     return;
   }
   c[d.id] = q + 1;
+  S.lastCart = d.k;
   render();
+  fxBump('.cartbtn .q');
 };
 A.sub = d => {
   const c = S.carts[d.k] || {};
@@ -41,9 +43,11 @@ A.sub = d => {
   else delete c[d.id];
   if (S.cview && S.cview.kind === 'checkout' && !cartCnt(d.k)) S.cview = { kind: 'kitchen', id: d.k };
   render();
+  fxBump('.cartbtn .q');
 };
 A.checkout = d => {
   S.cview = { kind: 'checkout', id: d.id };
+  S.sheet = null;
   render();
 };
 A.pay = d => {
@@ -65,6 +69,11 @@ A.submit = () => {
     k = kitchen(kid),
     items = Object.entries(S.carts[kid] || {}).filter(([, q]) => q > 0);
   if (!items.length) return;
+  const pay = S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay[0];
+  if (pay !== 'cash' && !S.co.receipt) {
+    toast('Прикрепите чек');
+    return;
+  }
   const o = mkOrder({
     kid,
     pointId: S.me.pointId,
@@ -74,13 +83,14 @@ A.submit = () => {
     items,
     status: 'request',
     t: S.time,
-    pay: S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay[0],
+    pay,
+    receipt: pay !== 'cash' ? { img: S.co.receipt, t: S.time } : null,
     comment: S.co.comment.trim(),
     fee: feeFor(k, S.me.pointId),
   });
   o.isNew = true;
   delete S.carts[kid];
-  S.co = { comment: '', pay: null };
+  S.co = { comment: '', pay: null, receipt: '' };
   S.lastOrder = o.id;
   S.kid = kid;
   S.map.kitchen = null;
@@ -100,10 +110,49 @@ A.cancel = d => {
   toast('Заявка отменена');
   render();
 };
-A.receipt = d => {
-  order(d.id).receipt = true;
-  toast('Чек отправлен');
+/* чек об оплате: в корзине и повторно, если кухня его отклонила */
+C.coReceipt = (d, el) =>
+  readImage(
+    el.files && el.files[0],
+    1200,
+    img => {
+      S.co.receipt = img;
+      render();
+    },
+    () => toast('Не получилось открыть файл')
+  );
+C.reReceipt = (d, el) =>
+  readImage(
+    el.files && el.files[0],
+    1200,
+    img => {
+      const o = order(d.id);
+      o.receipt = { img, t: S.time };
+      o.check = 'wait';
+      o.isNew = true;
+      toast('Чек отправлен');
+      render();
+    },
+    () => toast('Не получилось открыть файл')
+  );
+A.coReceiptView = () => {
+  S.sheet = { type: 'rcpt', img: S.co.receipt };
   render();
+};
+A.copyNum = d => {
+  const ok = () => toast('Номер скопирован');
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(d.v).then(ok, () => toast(d.v));
+  else toast(d.v);
+};
+/* шторка блюда и прокрутка ленты блюд в карточке заведения */
+A.cdish = d => {
+  S.sheet = { type: 'cdish', k: d.k, id: d.id };
+  render();
+};
+A.rcScroll = (d, el) => {
+  const sc = el.closest('.rc-wrap').querySelector('.rc-scroll');
+  sc.scrollBy({ left: +d.dir * sc.clientWidth * 0.8, behavior: FX.off() ? 'auto' : 'smooth' });
 };
 A.again = d => {
   const o = order(d.id),

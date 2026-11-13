@@ -169,37 +169,6 @@ body[data-role='welcome'] {
   grid-template-columns: minmax(0, 1fr);
   gap: 10px;
 }
-.rcard {
-  background: var(--card);
-  border-radius: 22px;
-  padding: 14px;
-  cursor: pointer;
-  transition: transform 0.12s;
-  min-width: 0;
-}
-.rcard:active {
-  transform: scale(0.99);
-}
-.rc-h {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.rc-t {
-  flex: 1;
-  min-width: 0;
-}
-.rc-t h3 {
-  font-size: 16.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.rc-t p {
-  font-size: 13px;
-  color: var(--ink2);
-  margin-top: 1px;
-}
 .rate {
   font-size: 13.5px;
   font-weight: 600;
@@ -208,53 +177,6 @@ body[data-role='welcome'] {
 .rate::before {
   content: '★ ';
   color: var(--warn);
-}
-.rc-two {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-.mini {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.mini .ph {
-  height: 98px;
-  border-radius: 14px;
-  font-size: 44px;
-  margin-bottom: 7px;
-}
-.mini b {
-  font-size: 13.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.mini > span:last-child {
-  font-size: 13.5px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.rc-more {
-  font-size: 13px;
-  color: var(--ink3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 9px;
-}
-.rc-f {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-.rcard.off .rc-two,
-.rcard.off .rc-more {
-  opacity: 0.5;
 }
 
 /* ---------- клиент: меню заведения ---------- */
@@ -342,25 +264,6 @@ body[data-role='welcome'] {
   aspect-ratio: 1.3;
   border-radius: 14px;
   font-size: 50px;
-}
-.dcard > b {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 14.5px;
-  font-weight: 500;
-  line-height: 1.25;
-  margin: 8px 4px 0;
-}
-.dcard > small {
-  display: block;
-  font-size: 12.5px;
-  color: var(--ink3);
-  margin: 2px 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .bd {
   position: absolute;
@@ -483,7 +386,6 @@ body[data-role='welcome'] {
   text-align: center;
   padding: 2px 7px;
   font-size: 14px;
-  animation: pop 0.28s ease-out;
 }
 .cb-l {
   flex: 1;
@@ -494,6 +396,15 @@ body[data-role='welcome'] {
   justify-content: center;
   font-size: 15px;
   font-weight: 600;
+}
+/* чек ещё не прикреплён: главная кнопка корзины открывает выбор файла */
+.cartbtn.att {
+  justify-content: center;
+  gap: 8px;
+  background: var(--card);
+  color: var(--accent);
+  box-shadow: 0 6px 20px rgba(23, 25, 30, 0.12);
+  cursor: pointer;
 }
 .cartbtn[disabled] {
   background: var(--fill2);
@@ -752,4 +663,383 @@ body[data-role='welcome'] {
 }
 .li.sel > .ic:last-child {
   color: var(--accent);
+}
+
+/* ---------- клиент: карточка заведения с лентой блюд ---------- */
+.rcard {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 14px 0;
+  min-width: 0;
+}
+.rc-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 14px;
+}
+.rc-h:active {
+  opacity: 0.6;
+}
+.rc-t {
+  flex: 1;
+  min-width: 0;
+}
+.rc-t b {
+  display: block;
+  font-size: 16.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-t small {
+  display: block;
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: 1px;
+}
+.rc-wrap {
+  position: relative;
+  margin-top: 12px;
+}
+.rc-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-left: 14px;
+  scroll-padding-left: 14px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.rc-scroll::-webkit-scrollbar {
+  display: none;
+}
+.rc-scroll::after {
+  content: '';
+  flex: 0 0 6px;
+}
+.mini {
+  flex: 0 0 132px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+}
+.mini-b {
+  display: block;
+  width: 100%;
+}
+.mini .ph {
+  height: 98px;
+  border-radius: 14px;
+  font-size: 44px;
+}
+.mini-b > b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 7px 2px 6px;
+}
+.mini .addbtn,
+.mini .stepper {
+  min-height: 38px;
+  border-radius: 12px;
+  font-size: 13.5px;
+}
+.mini .stepper button {
+  width: 38px;
+  height: 38px;
+}
+.mini.more {
+  flex: 0 0 92px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--ink2);
+  font-size: 13px;
+}
+.mini.more b {
+  font-weight: 500;
+}
+.rc-more {
+  font-size: 13px;
+  color: var(--ink3);
+  padding: 0 14px;
+  margin-top: 9px;
+}
+.rc-f {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 0 14px;
+}
+.rcard.off .rc-scroll {
+  opacity: 0.55;
+}
+.tagc.acc {
+  background: var(--accent);
+  color: #fff;
+}
+.rc-nav {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rc-nav {
+    position: absolute;
+    top: 32px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow: 0 2px 10px rgba(23, 25, 30, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      transform 0.12s;
+  }
+  .rc-nav.l {
+    left: 6px;
+  }
+  .rc-nav.r {
+    right: 6px;
+  }
+  .rcard:hover .rc-nav {
+    opacity: 1;
+  }
+  .rc-nav:active {
+    transform: scale(0.92);
+  }
+}
+/* корзина на главной — над нижним меню */
+.cartbar.home {
+  bottom: calc(var(--tab-h) + env(safe-area-inset-bottom));
+  padding: 8px 16px;
+  background: none;
+  pointer-events: none;
+}
+.cartbar.home .cartbtn {
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(47, 91, 234, 0.3);
+}
+.cartbar.home .cartbtn.off {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 6px 20px rgba(23, 25, 30, 0.14);
+}
+.c-shell:has(.cartbar.home) {
+  padding-bottom: calc(var(--tab-h) + 104px);
+}
+body:has(.cartbar) #toast {
+  bottom: calc(var(--tab-h) + 88px);
+}
+
+/* ---------- клиент: карточка блюда в меню и шторка блюда ---------- */
+.dc-b {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.dc-b > b {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 8px 4px 0;
+}
+.dc-b > small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink3);
+  margin: 2px 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ds-ph .ph {
+  width: 100%;
+  aspect-ratio: 1.7;
+  border-radius: 20px;
+  font-size: 92px;
+  background: var(--card);
+}
+.sheet h2.ds-n {
+  font-size: 22px;
+  margin: 14px 0 2px;
+  padding-right: 0;
+}
+.ds-meta {
+  font-size: 14px;
+  color: var(--ink2);
+}
+.ds-desc {
+  font-size: 15px;
+  line-height: 1.4;
+  margin-top: 10px;
+}
+.nutr {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 14px;
+}
+.nutr div {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 10px 4px;
+  text-align: center;
+}
+.nutr b {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.nutr small {
+  font-size: 12px;
+  color: var(--ink2);
+}
+.ds-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.ds-buy {
+  display: flex;
+  gap: 8px;
+  position: sticky;
+  bottom: 0;
+  margin-top: 8px;
+  padding-top: 10px;
+  background: linear-gradient(to top, var(--bg) 78%, rgba(243, 244, 246, 0));
+}
+.ds-buy .addbtn,
+.ds-buy .stepper,
+.ds-buy .btn {
+  flex: 1;
+  min-height: 52px;
+  border-radius: 16px;
+  font-size: 16px;
+  margin: 0;
+}
+.ds-buy .addbtn {
+  background: var(--accent);
+  color: #fff;
+  padding: 0 16px 0 18px;
+}
+.ds-buy .addbtn.off,
+.ds-buy .addbtn[disabled] {
+  background: var(--fill2);
+  color: var(--ink3);
+  justify-content: center;
+}
+.ds-buy .stepper button {
+  width: 52px;
+  height: 52px;
+}
+
+/* ---------- оплата переводом и чек ---------- */
+.pay-box {
+  background: var(--card);
+  border-radius: 18px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.pb-to {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+.pb-to > span {
+  flex: 1;
+  min-width: 0;
+}
+.pb-to small {
+  display: block;
+  font-size: 13px;
+  color: var(--ink2);
+}
+.pb-to b {
+  display: block;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  margin: 1px 0;
+}
+.pb-r {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 12px;
+  box-shadow: inset 0 1px 0 var(--line);
+}
+.pb-r > span {
+  flex: 1;
+  min-width: 0;
+}
+.pb-r b {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ok);
+}
+.pb-th {
+  width: 44px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--fill);
+  flex: none;
+}
+.pb-th img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+label.btn {
+  cursor: pointer;
+}
+button.tagc {
+  cursor: pointer;
+}
+.rcpt {
+  display: block;
+  background: var(--card);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.rcpt img {
+  display: block;
+  width: 100%;
+  max-height: 46vh;
+  object-fit: contain;
+}
+.rcpt-sum {
+  margin: 10px 0 6px;
+}
+.rcpt-sum .row > .tagc {
+  flex: none;
+}
+.rcpt-sum .row b {
+  font-size: 16px;
+  font-weight: 600;
+}
+.rcpt-sum .row small {
+  color: var(--ink2);
 }

@@ -7,7 +7,8 @@ function cCheckout(id) {
     items = menuItems(id).filter(i => cart[i.dishId] > 0);
   const total = cartSum(id),
     fee = feeFor(k, p.id),
-    pay = S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay[0];
+    pay = S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay[0],
+    transfer = pay !== 'cash';
   const row = i => {
     const d = i.dish,
       q = cart[i.dishId],
@@ -22,8 +23,23 @@ function cCheckout(id) {
   </div>
   <p class="cap">Оплата</p>
   <div class="pays">${k.pay.map(x => `<button class="chip ${x === pay ? 'on' : ''}" data-act="pay" data-p="${x}">${PAY[x].s}</button>`).join('')}</div>
+  ${
+    transfer
+      ? `<div class="pay-box"><div class="pb-to"><span><small>Переведите ${som(total + fee)}</small><b>${esc(k.payTo.num)}</b><small>${esc(k.payTo.name)}</small></span><button class="rbtn fill" data-act="copyNum" data-v="${esc(k.payTo.num)}" aria-label="Скопировать номер">${ic('copy', 19)}</button></div>${
+          S.co.receipt
+            ? `<div class="pb-r"><button class="pb-th" data-act="coReceiptView" aria-label="Посмотреть чек"><img src="${S.co.receipt}" alt=""></button><span><b>Чек прикреплён</b></span><label class="btn sm sec">Заменить<input type="file" accept="image/*" data-chg="coReceipt" hidden></label></div>`
+            : ''
+        }</div>`
+      : ''
+  }
   <input class="cmt" data-inp="comment" placeholder="Комментарий для кухни" aria-label="Комментарий для кухни" value="${esc(S.co.comment)}">
   <div class="totals"><div><span>Блюда</span><b>${som(total)}</b></div><div><span>Доставка</span><b class="${fee ? '' : 'okc'}">${fee ? som(fee) : 'бесплатно'}</b></div></div>
-  <p class="fine">Кухня подтвердит заявку — и она станет заказом.</p>
-  <div class="cartbar"><button class="cartbtn" data-act="submit" ${items.length && total >= k.min ? '' : 'disabled'}><span class="cb-l">Отправить заявку</span><span>${som(total + fee)}</span></button></div>`;
+  <p class="fine">${transfer ? 'Кухня проверит чек и примет заказ.' : 'Кухня подтвердит заявку — и она станет заказом.'}</p>
+  <div class="cartbar">${
+    total < k.min
+      ? `<div class="cartbtn off">Ещё ${som(k.min - total)} до заказа</div>`
+      : transfer && !S.co.receipt
+        ? `<label class="cartbtn att">${ic('clip', 20)}Прикрепить чек<input type="file" accept="image/*" data-chg="coReceipt" hidden></label>`
+        : `<button class="cartbtn" data-act="submit"><span class="cb-l">Отправить заявку</span><span>${som(total + fee)}</span></button>`
+  }</div>`;
 }
