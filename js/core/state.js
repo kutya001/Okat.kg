@@ -8,7 +8,11 @@ const S = {
   ctab: 'home',
   cview: null,
   typeFilter: 'all',
-  dfeed: { cat: 'all', q: '', sort: 'price' }, // лента блюд: категория, поиск, порядок предложений
+  dfeed: { cat: 'all', sort: 'price' }, // лента блюд: категория и порядок предложений
+  q: '', // поиск клиента: запрос и открыт ли он
+  qopen: false,
+  kq: '', // поиск в кабинете кухни
+  kqopen: false,
   otab: 'list', // вкладка «Заказы»: list — заказы, stats — статистика
   cstat: '30', // период статистики клиента, дней
   carts: {},

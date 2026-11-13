@@ -30,8 +30,11 @@ function mkOrder(a) {
     total: sum + fee,
     pay: a.pay,
     paid: !!a.paid,
-    receipt: a.receipt || null, // чек об оплате: { img, t }; img пустой — демонстрационный чек
-    check: a.receipt ? a.check || 'wait' : '', // проверка чека кухней: wait — ждёт, ok — принят, bad — отклонён
+    /* чеки об оплате переводом: { img, t, sum, st }; st: wait — ждёт проверки, ok — принят, bad — отклонён.
+       Пустой img — демонстрационный чек. Чеков может быть несколько: доплата после правки заказа */
+    receipts: a.receipt ? [{ img: a.receipt.img || '', t: a.receipt.t, sum: sum + fee, st: a.check || 'wait' }] : [],
+    edited: '', // когда клиент последний раз правил заявку
+    change: null, // уточнение к принятому заказу: { items: { dishId: qty }, note, t, st: 'wait' | 'ok' | 'no' }
     comment: a.comment || '',
     status: a.status,
     t: a.t,
@@ -57,16 +60,76 @@ function qtyBy(kid, dishId, pred) {
     if (o.day === 0 && o.kid === kid && pred(o)) for (const i of o.items) if (i.dishId === dishId) q += i.qty;
   return q;
 }
-/* заявку с переводом нельзя принять, пока кухня не посмотрела чек */
-const needsCheck = o => o.status === 'request' && o.pay !== 'cash' && o.check !== 'ok';
+/* ---------- оплата переводом ---------- */
+const lastRcpt = o => o.receipts[o.receipts.length - 1];
+const waitRcpts = o => o.receipts.filter(r => r.st === 'wait');
+/* проверка чеков: wait — есть непроверенный, bad — последний отклонён, ok — всё проверено, '' — чеков нет */
+const checkOf = o => (!o.receipts.length ? '' : waitRcpts(o).length ? 'wait' : lastRcpt(o).st);
+const okSum = o => sumBy(o.receipts, r => (r.st === 'ok' ? r.sum : 0));
+const sentSum = o => sumBy(o.receipts, r => (r.st !== 'bad' ? r.sum : 0));
+/* сколько ещё нужно перевести и сколько переведено лишнего (после правки заказа) */
+const dueSum = o => (o.pay === 'cash' ? 0 : Math.max(0, o.total - sentSum(o)));
+const overSum = o => (o.pay === 'cash' ? 0 : Math.max(0, sentSum(o) - o.total));
+/* перевод оплачен, когда принятые чеки покрывают сумму; наличные кухня отмечает сама */
+function syncPay(o) {
+  if (o.pay !== 'cash') o.paid = okSum(o) > 0 && okSum(o) >= o.total;
+}
+/* заявку с переводом нельзя принять, пока чеки не проверены и не покрывают сумму */
+const needsCheck = o => o.status === 'request' && o.pay !== 'cash' && (checkOf(o) !== 'ok' || dueSum(o) > 0);
+/* способ оплаты новой заявки: выбранный клиентом, иначе перевод, если кухня его принимает */
+const payOf = k => (S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay.find(x => x !== 'cash') || k.pay[0]);
 /* картинка чека; у демо-заказов настоящего файла нет — рисуем условный образец */
-function receiptSrc(o) {
-  if (o.receipt && o.receipt.img) return o.receipt.img;
+function receiptSrc(o, r) {
+  if (r.img) return r.img;
   const k = kitchen(o.kid),
     row = (y, l, v) =>
       `<text x="28" y="${y}" font-size="15" fill="#8a909c">${l}</text><text x="292" y="${y}" font-size="15" font-weight="600" text-anchor="end" fill="#17191e">${esc(v)}</text>`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" font-family="system-ui,sans-serif"><rect width="320" height="400" fill="#fff"/><text x="160" y="52" font-size="13" font-weight="700" text-anchor="middle" fill="#8a909c" >Демо-чек</text><circle cx="160" cy="104" r="26" fill="#e3f6ec"/><path d="m148 104 8 8 16-17" fill="none" stroke="#14995a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text x="160" y="170" font-size="30" font-weight="700" text-anchor="middle" fill="#17191e">${fmt(o.total)} сом</text><path d="M28 198h264" stroke="#ecedf0" stroke-width="2"/>${row(236, 'Способ', PAY[o.pay].s)}${row(268, 'Получатель', k.payTo.name)}${row(300, 'Отправитель', o.clientName)}${row(332, 'Время', o.receipt ? o.receipt.t : o.t)}<text x="160" y="376" font-size="12" text-anchor="middle" fill="#b3b8c2">Образец для прототипа, не платёжный документ</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" font-family="system-ui,sans-serif"><rect width="320" height="400" fill="#fff"/><text x="160" y="52" font-size="13" font-weight="700" text-anchor="middle" fill="#8a909c">Демо-чек</text><circle cx="160" cy="104" r="26" fill="#e3f6ec"/><path d="m148 104 8 8 16-17" fill="none" stroke="#14995a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text x="160" y="170" font-size="30" font-weight="700" text-anchor="middle" fill="#17191e">${fmt(r.sum)} сом</text><path d="M28 198h264" stroke="#ecedf0" stroke-width="2"/>${row(236, 'Способ', PAY[o.pay].s)}${row(268, 'Получатель', k.payTo.name)}${row(300, 'Отправитель', o.clientName)}${row(332, 'Время', r.t)}<text x="160" y="376" font-size="12" text-anchor="middle" fill="#b3b8c2">Образец для прототипа, не платёжный документ</text></svg>`;
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+
+/* ---------- состав заказа: правка заявки и уточнение ---------- */
+const qtyMap = o => Object.fromEntries(o.items.map(i => [i.dishId, i.qty]));
+/* цена блюда в заказе: уже заказанное — по цене заказа, новое — по сегодняшнему меню */
+function priceIn(o, dishId) {
+  const old = o.items.find(i => i.dishId === dishId),
+    mi = MENU[o.kid].today.items.find(i => i.dishId === dishId);
+  return old ? old.price : mi ? mi.price : (dish(dishId) || { price: 0 }).price;
+}
+/* сколько порций блюда может быть в этом заказе: остаток в меню плюс то, что заказ уже держит */
+function roomFor(o, dishId) {
+  const mi = menuItems(o.kid).find(i => i.dishId === dishId),
+    own = (o.items.find(i => i.dishId === dishId) || { qty: 0 }).qty;
+  return (mi ? mi.left : 0) + own;
+}
+const mapSum = (o, map) => sumBy(Object.entries(map), ([id, q]) => priceIn(o, id) * q);
+/* что изменится: [{ name, from, to }] только по блюдам с разницей */
+function orderDiff(o, map) {
+  const was = qtyMap(o);
+  return [...new Set([...Object.keys(was), ...Object.keys(map)])]
+    .map(id => ({
+      id,
+      name: (o.items.find(i => i.dishId === id) || dish(id) || { name: 'Блюдо' }).name,
+      from: was[id] || 0,
+      to: map[id] || 0,
+    }))
+    .filter(x => x.from !== x.to);
+}
+/* записать новый состав в заказ и пересчитать суммы и оплату */
+function setItems(o, map) {
+  const ids = [...new Set([...o.items.map(i => i.dishId), ...Object.keys(map)])];
+  o.items = ids
+    .filter(id => map[id] > 0)
+    .map(id => {
+      const old = o.items.find(i => i.dishId === id),
+        d = dish(id);
+      return old
+        ? { ...old, qty: map[id] }
+        : { dishId: id, name: d.name, em: d.em, price: priceIn(o, id), cost: d.cost, qty: map[id] };
+    });
+  o.sum = sumBy(o.items, i => i.price * i.qty);
+  o.total = o.sum + o.fee;
+  syncPay(o);
 }
 const taken = (kid, dishId) => qtyBy(kid, dishId, isActive);
 function dishFromPoint(kid, pid) {
@@ -109,12 +172,14 @@ function feeFor(k, pid) {
 function kStats(kid) {
   const os = ORDERS.filter(o => o.kid === kid && o.day === 0),
     req = os.filter(o => o.status === 'request'),
+    chg = os.filter(o => isActive(o) && o.change && o.change.st === 'wait'), // уточнения, которые ждут ответа кухни
     real = os.filter(isReal);
   const rev = sumBy(real, o => o.sum),
     cost = sumBy(real, o => sumBy(o.items, i => i.cost * i.qty));
   return {
     os,
     req,
+    chg,
     real,
     rev,
     cost,

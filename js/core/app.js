@@ -11,13 +11,8 @@ const viewKey = () =>
   !S.started
     ? 'w'
     : S.role === 'client'
-      ? 'c:' + (S.cview ? S.cview.kind + S.cview.id : S.ctab)
-      : 'k:' + S.ktab + (S.ktab === 'menu' ? ':' + S.mdoc : '');
-function demoBar() {
-  const nreq = ORDERS.filter(o => o.kid === S.kid && o.day === 0 && o.status === 'request' && o.isNew).length;
-  return `<div class="demo"><div class="seg" role="group" aria-label="Роль в прототипе"><button class="${S.role === 'client' ? 'on' : ''}" data-act="role" data-role="client">Клиент</button><button class="${S.role === 'kitchen' ? 'on' : ''}" data-act="role" data-role="kitchen">Кухня${nreq && S.role === 'client' ? `<i class="bdg">${nreq}</i>` : ''}</button></div>
-  <label class="demo-time" title="Демо-время">${ic('clock', 15)}<select data-chg="time" aria-label="Демо-время">${['08:40', '09:52', '10:20'].map(t => `<option ${t === S.time ? 'selected' : ''}>${t}</option>`).join('')}</select></label></div>`;
-}
+      ? 'c:' + (S.cview ? S.cview.kind + S.cview.id : searching() ? 'search' : S.ctab)
+      : 'k:' + (searching() ? 'search' : S.ktab + (S.ktab === 'menu' ? ':' + S.mdoc : ''));
 /* глубина экрана: по ней выбирается направление анимации при переходе */
 const viewDepth = () =>
   !S.started
@@ -25,10 +20,12 @@ const viewDepth = () =>
     : S.role === 'client'
       ? S.cview
         ? S.cview.kind === 'checkout'
-          ? 3
-          : 2
-        : 1
-      : S.mdoc != null && S.ktab === 'menu'
+          ? 4
+          : 3
+        : searching()
+          ? 2
+          : 1
+      : searching() || (S.mdoc != null && S.ktab === 'menu')
         ? 2
         : 1;
 let lastDepth = 0,
@@ -46,7 +43,7 @@ function render(opt = {}) {
   document.body.dataset.kw = S.kw;
   document.body.dataset.ks = S.kside;
   FX.dir = same ? '' : opt.back || depth < lastDepth ? 'back' : depth > lastDepth ? 'fwd' : '';
-  morph($('#app'), !S.started ? welcome() : demoBar() + (S.role === 'client' ? clientApp() : kitchenApp()));
+  morph($('#app'), !S.started ? welcome() : S.role === 'client' ? clientApp() : kitchenApp());
   renderSheet();
   document.body.classList.toggle('lock', !!S.sheet);
   $$('[data-keep]').forEach(e => {
@@ -68,7 +65,7 @@ function renderSheet() {
     cur = root.firstElementChild,
     live = cur && !cur.classList.contains('out');
   if (S.sheet) {
-    const html = `<div class="sheet-bg" data-act="closeBg"><div class="sheet" role="dialog" aria-modal="true"><button class="sheet-x" data-act="closeSheet" aria-label="Закрыть">${ic('x', 18)}</button>${SHEETS[S.sheet.type]()}</div></div>`;
+    const html = `<div class="sheet-bg ${S.sheet.type === 'menu' ? 'side' : ''}" data-act="closeBg"><div class="sheet" role="dialog" aria-modal="true"><button class="sheet-x" data-act="closeSheet" aria-label="Закрыть">${ic('x', 18)}</button>${SHEETS[S.sheet.type]()}</div></div>`;
     if (live && sheetOpen === S.sheet.type) morph(root, html);
     else root.innerHTML = html;
     sheetOpen = S.sheet.type;

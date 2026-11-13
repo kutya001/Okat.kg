@@ -1,0 +1,359 @@
+/* ---------- парящие панели: матовое стекло ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.66);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 10px 30px rgba(23, 25, 30, 0.12),
+    0 1px 2px rgba(23, 25, 30, 0.06);
+}
+/* браузер не умеет размывать фон — делаем панель почти непрозрачной */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255, 255, 255, 0.96);
+  }
+}
+
+/* ---------- верхняя панель: меню, главное, поиск ---------- */
+.topbar {
+  position: sticky;
+  top: calc(8px + env(safe-area-inset-top));
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 56px;
+  margin: 8px 12px;
+  padding: 0 7px;
+  border-radius: 20px;
+}
+.topbar .rbtn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  background: none;
+}
+.topbar .rbtn:hover {
+  background: rgba(23, 25, 30, 0.06);
+}
+.tb-sp {
+  width: 42px;
+  flex: none;
+}
+.tb-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1.2;
+}
+.tb-main small {
+  font-size: 12px;
+  color: var(--ink2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tb-main b {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+.tb-main b span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tb-main b .ic {
+  flex: none;
+  color: var(--ink3);
+}
+.tb-q {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 13px;
+  background: rgba(23, 25, 30, 0.06);
+  color: var(--ink3);
+  transition:
+    background-color 0.18s,
+    box-shadow 0.18s;
+}
+.tb-q:focus-within {
+  background: var(--card);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.tb-q input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--ink);
+}
+.topbar.q .tb-q {
+  display: flex;
+}
+.topbar.q .tb-main {
+  display: none;
+}
+.nav-logo {
+  display: none;
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+  margin: 0 10px 0 4px;
+}
+
+/* ---------- нижняя панель разделов ---------- */
+.tabbar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  gap: 2px;
+  height: 62px;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 6px;
+  border-radius: 24px;
+}
+.tabbar button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  border-radius: 18px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.tabbar button.on {
+  color: var(--ink);
+  background: rgba(23, 25, 30, 0.07);
+  font-weight: 600;
+}
+.tabbar .bdg {
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 6px);
+}
+
+/* ---------- значки-счётчики и переключатель ---------- */
+.bdg {
+  font-style: normal;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--bad);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+.seg {
+  display: flex;
+  background: var(--fill2);
+  border-radius: 14px;
+  padding: 3px;
+}
+.seg button {
+  flex: 1;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  border-radius: 11px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.seg button.on {
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ---------- меню: выезжает слева ---------- */
+.sheet-bg.side {
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.sheet-bg.side .sheet {
+  width: min(86vw, 340px);
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  border-radius: 0 26px 26px 0;
+  padding: calc(18px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom));
+  animation: side-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet-bg.side.out .sheet {
+  animation: side-out 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes side-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes side-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+.dr-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 44px 16px 4px;
+}
+.dr-h .ava {
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--card);
+}
+.dr-h b {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.dr-h small {
+  font-size: 13px;
+  color: var(--ink2);
+}
+.dr-nav,
+.dr-set {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dr-nav {
+  margin-bottom: 6px;
+}
+.dr-set {
+  margin-top: 8px;
+}
+.dr-i {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 15.5px;
+  font-weight: 500;
+  transition: background-color 0.18s;
+}
+.dr-i:hover {
+  background: var(--fill2);
+}
+.dr-i.on {
+  background: var(--card);
+  font-weight: 600;
+}
+.dr-i > .ic {
+  color: var(--ink2);
+  flex: none;
+}
+.dr-i.on > .ic {
+  color: var(--accent);
+}
+.dr-i > span {
+  flex: 1;
+  min-width: 0;
+}
+.dr-i small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink3);
+}
+.dr-i select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  max-width: 170px;
+  background: var(--fill2);
+  border-radius: 10px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- широкий экран ---------- */
+@media (min-width: 900px) {
+  .c-app > .topbar {
+    width: calc(100% - 48px);
+    max-width: 1112px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .topbar {
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .nav-logo {
+    display: block;
+  }
+  .tb-main {
+    flex: 0 1 auto;
+    max-width: 300px;
+  }
+  /* поиск виден всегда, кнопка-лупа не нужна */
+  .topbar.has-q .tb-q {
+    display: flex;
+    flex: 0 1 400px;
+    margin-left: auto;
+  }
+  .topbar.q .tb-main {
+    display: flex;
+  }
+  .topbar .tb-s {
+    display: none;
+  }
+  .topbar:not(.has-q) .tb-main {
+    flex: 1;
+    max-width: none;
+  }
+}
+@media (min-width: 960px) {
+  .k-col > .topbar {
+    margin: 8px 28px 8px 12px;
+  }
+  .k-col .nav-logo {
+    display: none;
+  }
+}

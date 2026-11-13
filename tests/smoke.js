@@ -1,6 +1,6 @@
 'use strict';
 // Проходит по всем экранам на телефоне и компьютере: ошибки в консоли, горизонтальная прокрутка, снимки экранов.
-const { URL, SHOTS, launch, receiptFile } = require('./lib/env.js');
+const { URL, SHOTS, launch, receiptFile, ui } = require('./lib/env.js');
 const tile = require('./lib/tile.js')();
 const path = URL,
   out = SHOTS;
@@ -38,9 +38,16 @@ const path = URL,
       await p.screenshot({ path: out + name + '-' + n + '.png' });
     };
     await ov('welcome');
+    const U = ui(() => p);
     await c('[data-act=start][data-role=client]');
     await ov('home');
     await shot('home');
+    await c('.topbar [data-act=menu]');
+    await p.waitForTimeout(350);
+    await ov('menu');
+    await shot('menu');
+    await c('[data-act=closeSheet]');
+    await p.waitForTimeout(250);
     // заказ прямо из карточки заведения: лента блюд, шторка блюда, корзина на главной
     await c('.rcard[data-key=rc-k1] [data-act=add][data-id=k1d1]');
     await c('.rcard[data-key=rc-k1] [data-act=cdish][data-id=k1d4]');
@@ -73,16 +80,20 @@ const path = URL,
     await c('.tabbar [data-tab=dishes]');
     await ov('dishes');
     await shot('dishes');
-    await p.locator('.dq input').fill('плов');
-    await ov('dishes-search');
-    await shot('dishes-search');
-    await p.locator('.dq input').fill('');
+    if (!desk) await c('[data-act=qOpen]');
+    else await p.locator('.tb-q input').focus();
+    await ov('search-empty');
+    await shot('search-empty');
+    await p.locator('.tb-q input').fill('плов');
+    await ov('search');
+    await shot('search');
+    await c('[data-act=qClose]');
     await c('.tabbar [data-tab=map]');
     await ov('map');
     await shot('map');
     await c('.tabbar [data-tab=profile]');
     await ov('profile');
-    await c('[data-act=role][data-role=kitchen]');
+    await U.role('kitchen');
     await ov('k-dash');
     await shot('k-dash');
     const nav = t =>
@@ -91,7 +102,7 @@ const path = URL,
         : t === 'dishes' || t === 'clients'
           ? c(`.mseg [data-tab=${t}]`)
           : t === 'profile'
-            ? c('.k-top [data-tab=profile]')
+            ? U.go('profile')
             : c(`.k-tabbar [data-tab=${t}]`);
     for (const t of ['orders', 'menu', 'dishes', 'reports', 'clients', 'profile']) {
       await nav(t);

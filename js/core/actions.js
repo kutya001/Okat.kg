@@ -13,6 +13,8 @@ A.home = () => {
 A.role = d => {
   S.role = d.role;
   S.sheet = null;
+  S.q = S.kq = '';
+  S.qopen = S.kqopen = false;
   S.map.sel = null;
   render();
 };

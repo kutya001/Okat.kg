@@ -1,6 +1,6 @@
 'use strict';
 // Лента блюд, статистика клиента, учёт клиентов кухни, минимальная сумма в меню дня, сворачивание панели.
-const { URL, launch } = require('./lib/env.js');
+const { URL, launch, ui } = require('./lib/env.js');
 const assert = (c, m) => {
   if (!c) {
     console.log('FAIL: ' + m);
@@ -24,6 +24,7 @@ const assert = (c, m) => {
     ev = (f, a) => p.evaluate(f, a);
 
   // ---------- лента блюд
+  const U = ui(() => p);
   await c('[data-act=start][data-role=client]');
   await c('.tabbar [data-tab=dishes]');
   const plov = p.locator('.ogroup', { has: p.locator('h3', { hasText: /^Плов$/ }) });
@@ -49,13 +50,15 @@ const assert = (c, m) => {
     (await ev(() => Object.keys(S.carts).length)) === 1 && (await p.locator('.cartbar.home').count()) === 1,
     'ordered from the dish feed'
   );
-  await p.locator('.dq input').fill('лагман');
+  await c('[data-act=qOpen]');
+  await p.locator('.tb-q input').fill('лагман');
   const first = await p.locator('.ogroup h3').first().innerText();
   assert(
-    first === 'Лагман' && (await p.locator('.dq input').evaluate(el => el === document.activeElement)),
+    first === 'Лагман' && (await p.locator('.tb-q input').evaluate(el => el === document.activeElement)),
     'search finds the dish and keeps focus'
   );
-  await p.locator('.dq input').fill('');
+  await c('[data-act=qClose]');
+  await c('.tabbar [data-tab=dishes]');
   await c('[data-act=dcat][data-c=drink]');
   assert((await p.locator('.cat-h').allInnerTexts()).join() === 'Напитки', 'category filter');
 
@@ -79,7 +82,7 @@ const assert = (c, m) => {
   assert((await p.locator('.bars .bar').count()) === 7, '7-day period');
 
   // ---------- минимальная сумма в меню дня
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await ev(() => {
     S.kid = 'k1';
     S.ktab = 'menu';
@@ -92,7 +95,7 @@ const assert = (c, m) => {
     (await ev(() => MENU.k1.today.min)) === 900 && (await ev(() => kitchen('k1').def.min)) === 200,
     'today has its own minimum, the default is untouched'
   );
-  await c('[data-act=role][data-role=client]');
+  await U.role('client');
   await ev(() => {
     S.carts = { k1: { k1d1: 1 } };
     S.lastCart = 'k1';

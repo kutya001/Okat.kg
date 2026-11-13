@@ -18,6 +18,6 @@ function cMap() {
     })
     .join('');
   return `<div class="mapwrap"><div id="map" class="map" data-mode="client">${S.map.real ? '' : mapSVG('client')}</div>
-    <div class="map-top">${addrBtn(p)}<div class="chips" data-keep="mtypes">${typeChips()}</div>${mapNote()}</div>${mapCtl()}
+    <div class="map-top"><div class="chips" data-keep="mtypes">${typeChips()}</div>${mapNote()}</div>${mapCtl()}
     <div class="mcar" data-keep="mcar">${cards}</div></div>`;
 }

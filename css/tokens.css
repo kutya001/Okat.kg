@@ -16,8 +16,8 @@
   --warn-ink: #7a5200;
   --bad: #e5484d;
   --bad-soft: #fdecec;
-  --demo-h: 40px;
-  --tab-h: 58px;
+  --top-h: 72px; /* место под верхнюю панель: отступ, сама панель, отступ */
+  --tab-h: 78px; /* место под нижнюю панель */
   --font: 'Golos Text', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 * {
@@ -89,7 +89,6 @@ h3 {
   outline-offset: 2px;
   border-radius: 8px;
 }
-.only-d,
-.nav-logo {
+.only-d {
   display: none !important;
 }

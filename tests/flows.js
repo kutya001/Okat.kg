@@ -1,6 +1,6 @@
 'use strict';
 // Сценарии: заявка → подтверждение → чек, отказ, меню по дням, блюда, лимиты, карта.
-const { URL, SHOTS, launch, receiptFile } = require('./lib/env.js');
+const { URL, SHOTS, launch, receiptFile, ui } = require('./lib/env.js');
 const assert = (c, m) => {
   if (!c) {
     console.log('FAIL: ' + m);
@@ -24,6 +24,7 @@ const assert = (c, m) => {
   await p.waitForTimeout(300);
   const c = s => p.locator(s).first().click(),
     ev = (f, a) => p.evaluate(f, a);
+  const U = ui(() => p);
   await c('[data-act=start][data-role=client]');
   assert((await ev(() => pointStats('p1').total)) === 21, 'seed: 21 person from p1');
   // order in kitchen with delivery fee & free threshold (k3: 3 orders from p1, freeFrom 5 -> fee 50)
@@ -40,7 +41,9 @@ const assert = (c, m) => {
   assert(
     (await ev(() => {
       const o = ORDERS.find(o => o.clientId === 'me' && o.day === 0);
-      return o.check === 'wait' && o.receipt.img.startsWith('data:image/') && !o.paid;
+      return (
+        checkOf(o) === 'wait' && lastRcpt(o).img.startsWith('data:image/') && lastRcpt(o).sum === o.total && !o.paid
+      );
     })) === true,
     'request carries the receipt, waits for check'
   );
@@ -50,7 +53,7 @@ const assert = (c, m) => {
   );
   assert((await ev(() => S.kid)) === 'k3', 'kitchen cabinet switched to k3');
   // kitchen confirms -> client sees confirmed + receipt
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await c('.k-tabbar [data-tab=orders]');
   const mine = () => p.locator('.tkt', { hasText: 'Азамат' });
   assert((await mine().locator('[data-act=ordNext]').count()) === 0, 'no plain accept for a transfer request');
@@ -58,26 +61,31 @@ const assert = (c, m) => {
   await mine().locator('.btn[data-act=rcpt]').click();
   assert((await p.locator('.sheet .rcpt img').count()) === 1, 'kitchen opens the receipt');
   await c('[data-act=rcptBad]');
-  assert((await mine().innerText()).includes('Ждём новый чек'), 'kitchen waits for a new receipt');
-  await c('[data-act=role][data-role=client]');
+  assert((await mine().innerText()).includes('Ждём чек'), 'kitchen waits for a new receipt');
+  await U.role('client');
   assert((await p.locator('.ord').first().innerText()).includes('Нужен новый чек'), 'client asked for a new receipt');
-  await p.locator('[data-chg=reReceipt]').setInputFiles(receiptFile());
-  await p.waitForFunction(() => ORDERS.find(o => o.clientId === 'me' && o.day === 0).check === 'wait');
+  await c('.o-due [data-act=opay]');
+  assert(
+    (await p.locator('.sheet .pb-to').innerText()).includes('+996 770 11 22 33'),
+    'payment sheet shows where to transfer'
+  );
+  await p.locator('[data-chg=oReceipt]').setInputFiles(receiptFile());
+  await p.waitForFunction(() => checkOf(ORDERS.find(o => o.clientId === 'me' && o.day === 0)) === 'wait');
   assert((await p.locator('.ord').first().innerText()).includes('Чек на проверке'), 'new receipt sent');
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await mine().locator('.btn[data-act=rcpt]').click();
   await c('[data-act=rcptOk]');
   assert(
     (await ev(() => {
       const o = ORDERS.find(o => o.clientId === 'me' && o.day === 0);
-      return o.status === 'confirmed' && o.paid && o.check === 'ok';
+      return o.status === 'confirmed' && o.paid && checkOf(o) === 'ok' && o.receipts.length === 2;
     })) === true,
     'receipt accepted: order confirmed and paid'
   );
-  await c('[data-act=role][data-role=client]');
+  await U.role('client');
   const mineCard = await p.locator('.ord').first().innerText();
   assert(mineCard.includes('Заказ принят') && mineCard.includes('Оплачен'), 'client sees confirmed and paid');
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   // наличные: заявку принимают без чека, оплату отмечают вручную
   const cash = await ev(() => {
     const o = ORDERS.find(
@@ -199,12 +207,12 @@ const assert = (c, m) => {
   await c('.k-tabbar [data-tab=reports]');
   await c('[data-act=rep][data-p=today]');
   await c('[data-act=rep][data-p="30"]');
-  await c('.k-top [data-tab=profile]');
+  await U.go('profile');
   await p.locator('input[data-f=freeFrom]').fill('3');
   await p.locator('input[data-f=freeFrom]').blur();
   assert((await ev(() => kitchen('k3').freeFrom)) === 3, 'profile freeFrom saved');
   // client: price change visible, free delivery now, cancel flow, repeat, change point
-  await c('[data-act=role][data-role=client]');
+  await U.role('client');
   await c('.tabbar [data-tab=home]');
   assert((await p.locator('.rcard[data-key=rc-k3]').innerText()).includes('333'), 'client sees new price');
   assert((await p.locator('.rcard[data-key=rc-k3]').innerText()).includes('бесплатно'), 'free delivery reached');
@@ -214,6 +222,7 @@ const assert = (c, m) => {
   assert((await ev(() => S.carts.k1.k1d5)) === 2, 'manty: 2 in cart (only 2 left)');
   assert(await p.locator('[data-act=add][data-id=k1d5]').isDisabled(), 'plus disabled at stock limit');
   await c('[data-act=checkout]');
+  await c('[data-act=pay][data-p=cash]');
   await c('[data-act=submit]');
   await c('[data-act=cancel]');
   assert(
@@ -249,7 +258,7 @@ const assert = (c, m) => {
   await p.waitForTimeout(400);
   assert((await p.locator('.mcard.sel[data-id=k5]').count()) === 1, 'pin tap selects card');
   // closed window
-  await p.selectOption('select[data-chg=time]', '10:20');
+  await U.time('10:20');
   await c('.mcard[data-id=k5] [data-act=openK]');
   assert((await p.locator('[data-act=add]').count()) === 0, 'no ordering after cutoff');
   console.log(errs.length ? 'ERRORS:\n' + errs.join('\n') : 'NO JS ERRORS');

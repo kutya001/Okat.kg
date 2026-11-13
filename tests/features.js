@@ -1,6 +1,6 @@
 'use strict';
 // Лента блюд в карточке заведения, шторка блюда с БЖУ, форма блюда у кухни, плавное обновление экрана.
-const { URL, launch } = require('./lib/env.js');
+const { URL, launch, ui } = require('./lib/env.js');
 const assert = (c, m) => {
   if (!c) {
     console.log('FAIL: ' + m);
@@ -20,6 +20,7 @@ const assert = (c, m) => {
     ev = (f, a) => p.evaluate(f, a),
     card = '.rcard[data-key=rc-k1] ';
 
+  const U = ui(() => p);
   await c('[data-act=start][data-role=client]');
   // лента блюд: все блюда меню, листается вбок, заказ прямо из карточки
   const tiles = await p.locator(card + '.mini:not(.more)').count();
@@ -84,7 +85,7 @@ const assert = (c, m) => {
   assert((await p.locator('.cmt').inputValue()) === 'Без лука', 'comment survives a re-render');
 
   // кухня: описание, БЖУ и метки в форме блюда → видит клиент
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await ev(() => {
     S.kid = 'k1';
     S.ktab = 'dishes';
@@ -113,7 +114,7 @@ const assert = (c, m) => {
     }, tg.id)) === true,
     'dish saved: kcal counted from protein, fat and carbs'
   );
-  await c('[data-act=role][data-role=client]');
+  await U.role('client');
   await ev(() => {
     S.cview = { kind: 'kitchen', id: 'k1' };
     render();

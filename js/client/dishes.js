@@ -4,9 +4,8 @@
 const rateNum = k => parseFloat(String(k.rating).replace(',', '.')) || 0;
 const DSORT = { price: 'Дешевле', rating: 'По рейтингу', near: 'Ближе' };
 /* блюда сегодняшних меню, собранные по виду: «Плов» — предложения всех заведений, где он есть */
-function dishGroups() {
+function dishGroups(q = '') {
   const me = point(S.me.pointId),
-    q = S.dfeed.q.trim().toLowerCase(),
     groups = {};
   for (const k of KITCHENS) {
     if (!MENU[k.id].today.published) continue;
@@ -51,52 +50,36 @@ function offerRow(o) {
     q = (S.carts[k.id] || {})[d.id] || 0;
   return `<div class="offer ${o.open ? '' : 'off'}"><button class="of-b" data-act="cdish" data-k="${k.id}" data-id="${d.id}" aria-label="${esc(d.name)}, ${esc(k.name)}: подробнее">${ph(d, 'em')}<span class="of-t"><b>${esc(k.name)}</b><small>${esc(d.name)}${d.w ? ', ' + d.w : ''}</small><small><i class="rate">${k.rating}</i>${distTxt(o.dist)}${o.open ? '' : ', ' + (winState(k) === 'closed' ? 'закрыто' : 'с ' + k.from)}${o.open && i.left > 0 && i.left <= 5 ? `, осталось ${i.left}` : ''}</small></span></button>${addCtl(i, q, o.open)}</div>`;
 }
+const groupCard = g =>
+  `<section class="ogroup" data-key="og-${esc(g.kind)}"><header><h3>${esc(g.kind)}</h3><span>${g.offers.length > 1 ? 'от ' : ''}${som(g.from)}</span></header>${g.offers.map(offerRow).join('')}</section>`;
 function cDishes() {
-  const p = point(S.me.pointId),
-    all = dishGroups(),
-    cat = S.dfeed.cat;
+  const all = dishGroups(),
+    cat = S.dfeed.cat,
+    order = (a, b) => b.offers.length - a.offers.length || a.from - b.from || a.kind.localeCompare(b.kind, 'ru');
+  /* первой в ряду стоит сортировка предложений, дальше — категории */
   const chips =
+    `<label class="chip selc" aria-label="Порядок предложений">${ic('sort', 16)}<select data-chg="dsort">${Object.entries(
+      DSORT
+    )
+      .map(([id, l]) => `<option value="${id}" ${S.dfeed.sort === id ? 'selected' : ''}>${l}</option>`)
+      .join('')}</select></label>` +
     `<button class="chip ${cat === 'all' ? 'on' : ''}" data-act="dcat" data-c="all">Все</button>` +
     CATS.filter(c => all.some(g => g.cat === c.id))
       .map(c => `<button class="chip ${cat === c.id ? 'on' : ''}" data-act="dcat" data-c="${c.id}">${c.n}</button>`)
       .join('');
-  const card = g =>
-      `<section class="ogroup" data-key="og-${esc(g.kind)}"><header><h3>${esc(g.kind)}</h3><span>${g.offers.length > 1 ? 'от ' : ''}${som(g.from)}</span></header>${g.offers.map(offerRow).join('')}</section>`,
-    order = (a, b) => b.offers.length - a.offers.length || a.from - b.from || a.kind.localeCompare(b.kind, 'ru');
-  /* при поиске — один список по близости к запросу; без поиска — разделы по категориям */
-  const found = all.filter(g => cat === 'all' || g.cat === cat).sort((a, b) => a.rank - b.rank || order(a, b));
-  const sections = S.dfeed.q.trim()
-    ? found.length
-      ? `<div class="dfeed found">${found.map(card).join('')}</div>`
-      : ''
-    : CATS.filter(c => cat === 'all' || cat === c.id)
-        .map(c => {
-          /* сначала блюда, которые есть у нескольких заведений */
-          const gs = all.filter(g => g.cat === c.id).sort(order);
-          return gs.length ? `<h2 class="cat-h">${c.n}</h2><div class="dfeed">${gs.map(card).join('')}</div>` : '';
-        })
-        .join('');
-  return `<header class="top">${addrBtn(p)}</header>
-  <div class="dsearch"><label class="dq">${ic('search', 19)}<input type="search" value="${esc(S.dfeed.q)}" data-inp="dq" placeholder="Найти блюдо" aria-label="Найти блюдо" enterkeyhint="search"></label><label class="selw ds" aria-label="Порядок предложений">${ic('sort', 18)}<select data-chg="dsort">${Object.entries(
-    DSORT
-  )
-    .map(([id, l]) => `<option value="${id}" ${S.dfeed.sort === id ? 'selected' : ''}>${l}</option>`)
-    .join('')}</select></label></div>
-  <div class="chips" data-keep="dcats">${chips}</div>
-  ${sections || `<div class="blank"><div class="blank-em">🔎</div><b>Ничего не нашлось</b>${S.dfeed.q ? `<button class="btn sec" data-act="dqClear">Сбросить поиск</button>` : ''}</div>`}
+  /* разделы по категориям; внутри сначала блюда, которые есть у нескольких заведений */
+  const sections = CATS.filter(c => cat === 'all' || cat === c.id)
+    .map(c => {
+      const gs = all.filter(g => g.cat === c.id).sort(order);
+      return gs.length ? `<h2 class="cat-h">${c.n}</h2><div class="dfeed">${gs.map(groupCard).join('')}</div>` : '';
+    })
+    .join('');
+  return `<div class="chips" data-keep="dcats">${chips}</div>
+  ${sections || `<div class="blank"><div class="blank-em">🍽️</div><b>Сегодня меню ещё нет</b></div>`}
   ${homeCart()}`;
 }
 A.dcat = d => {
   S.dfeed.cat = d.c;
-  render();
-};
-I.dq = (d, el) => {
-  S.dfeed.q = el.value;
-  render();
-};
-A.dqClear = () => {
-  S.dfeed.q = '';
-  S.dfeed.cat = 'all';
   render();
 };
 C.dsort = (d, el) => {

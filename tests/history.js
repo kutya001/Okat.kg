@@ -1,6 +1,6 @@
 'use strict';
 // Кнопка «Назад» браузера: возврат по экранам, закрытие шторки, порядок в истории.
-const { URL, launch } = require('./lib/env.js');
+const { URL, launch, ui } = require('./lib/env.js');
 const assert = (c, m) => {
   if (!c) {
     console.log('FAIL: ' + m);
@@ -34,6 +34,7 @@ const assert = (c, m) => {
               : 'k:' + S.ktab + (S.mdoc != null ? ':doc' : '')) + (S.sheet ? '+sheet' : '')
       );
 
+  const U = ui(() => p);
   await c('[data-act=start][data-role=client]');
   await c('.rc-h[data-id=k1]');
   await c('[data-act=add][data-id=k1d1]');
@@ -66,18 +67,19 @@ const assert = (c, m) => {
   assert((await view()) === 'home+sheet', 'points sheet opened');
   await back();
   assert((await view()) === 'home', 'Back closes the sheet');
-  assert((await p.locator('.sheet').count()) === 0, 'sheet removed from the page');
+  assert((await p.locator('.sheet-bg:not(.out)').count()) === 0, 'sheet is closed');
 
   // после отправки заявки «Назад» не возвращает в пустую корзину
   await c('.rc-h[data-id=k1]');
   await c('[data-act=checkout]');
+  await c('[data-act=pay][data-p=cash]');
   await c('[data-act=submit]');
   assert((await view()) === 'orders', 'request sent -> orders');
   await back();
   assert((await view()) === 'kitchen', 'Back after submit -> kitchen menu, not an empty cart');
 
   // кабинет кухни: документ меню
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await c('.k-tabbar [data-tab=menu]');
   await c('.mdoc[data-d="0"]');
   assert((await view()) === 'k:menu:doc', 'menu document opened');

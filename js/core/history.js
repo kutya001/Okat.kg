@@ -11,6 +11,8 @@ const navSnap = () => ({
   cview: S.cview,
   ktab: S.ktab,
   mdoc: S.mdoc,
+  q: S.qopen,
+  kq: S.kqopen,
   sheet: !!S.sheet,
 });
 const navState = (snap, i) => ({ okat: snap, i, sid: NAV.sid });
@@ -58,6 +60,11 @@ function navApply(st) {
   if (v && v.kind === 'checkout' && !cartCnt(v.id)) v = { kind: 'kitchen', id: v.id };
   S.cview = v;
   S.mdoc = st.mdoc != null && MENU[S.kid][st.mdoc] ? st.mdoc : null;
+  /* вышли из поиска кнопкой «Назад» — запрос сбрасывается */
+  S.qopen = !!st.q;
+  S.kqopen = !!st.kq;
+  if (!S.qopen) S.q = '';
+  if (!S.kqopen) S.kq = '';
   S.sheet = null;
   S.map.sel = null;
 }

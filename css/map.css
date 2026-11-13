@@ -1,8 +1,8 @@
 /* ---------- карта ---------- */
 .mapwrap {
   position: relative;
-  height: calc(100vh - var(--demo-h) - var(--tab-h));
-  height: calc(100dvh - var(--demo-h) - var(--tab-h) - env(safe-area-inset-bottom));
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 .map {
@@ -125,7 +125,7 @@
 }
 .map-top {
   position: absolute;
-  top: 8px;
+  top: calc(var(--top-h) + env(safe-area-inset-top));
   left: 12px;
   right: 12px;
   display: flex;
@@ -136,15 +136,6 @@
 }
 .map-top > * {
   pointer-events: auto;
-}
-.map-top .addr {
-  align-self: flex-start;
-  background: var(--card);
-  border-radius: 999px;
-  padding: 0 14px 0 12px;
-  font-size: 15.5px;
-  max-width: calc(100% - 56px);
-  box-shadow: 0 2px 12px rgba(23, 25, 30, 0.14);
 }
 .map-top .chip {
   box-shadow: 0 2px 10px rgba(23, 25, 30, 0.12);
@@ -186,14 +177,14 @@
   margin: 0 0 8px;
 }
 .mapwrap .leaflet-bottom {
-  bottom: 92px;
+  bottom: calc(var(--tab-h) + 96px);
 }
 .mcar {
   --cw: min(84vw, 340px);
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(var(--tab-h) + env(safe-area-inset-bottom) - 6px);
   z-index: 3;
   display: flex;
   gap: 8px;
@@ -247,4 +238,9 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+}
+/* на карте клиента кнопки масштаба стоят столбиком под рядом фильтров */
+.mapwrap > .map-ctl {
+  top: calc(var(--top-h) + env(safe-area-inset-top) + 52px);
+  flex-direction: column;
 }

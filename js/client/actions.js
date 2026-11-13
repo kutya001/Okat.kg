@@ -3,6 +3,8 @@
 A.tab = d => {
   S.ctab = d.tab;
   S.cview = null;
+  S.q = '';
+  S.qopen = false;
   S.map.sel = null;
   render();
 };
@@ -70,7 +72,7 @@ A.submit = () => {
     k = kitchen(kid),
     items = Object.entries(S.carts[kid] || {}).filter(([, q]) => q > 0);
   if (!items.length) return;
-  const pay = S.co.pay && k.pay.includes(S.co.pay) ? S.co.pay : k.pay[0];
+  const pay = payOf(k);
   if (pay !== 'cash' && !S.co.receipt) {
     toast('Прикрепите чек');
     return;
@@ -99,6 +101,7 @@ A.submit = () => {
   S.kpoint = 'all';
   S.cview = null;
   S.ctab = 'orders';
+  S.otab = 'list';
   toast('Заявка отправлена');
   render();
 };
@@ -111,27 +114,13 @@ A.cancel = d => {
   toast('Заявка отменена');
   render();
 };
-/* чек об оплате: в корзине и повторно, если кухня его отклонила */
+/* чек об оплате в корзине; чеки к уже отправленному заказу — в order-edit.js */
 C.coReceipt = (d, el) =>
   readImage(
     el.files && el.files[0],
     1200,
     img => {
       S.co.receipt = img;
-      render();
-    },
-    () => toast('Не получилось открыть файл')
-  );
-C.reReceipt = (d, el) =>
-  readImage(
-    el.files && el.files[0],
-    1200,
-    img => {
-      const o = order(d.id);
-      o.receipt = { img, t: S.time };
-      o.check = 'wait';
-      o.isNew = true;
-      toast('Чек отправлен');
       render();
     },
     () => toast('Не получилось открыть файл')

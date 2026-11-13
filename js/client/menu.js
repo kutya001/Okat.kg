@@ -49,8 +49,7 @@ function cKitchen(id) {
     total = cartSum(id),
     fee = feeFor(k, p.id),
     need = k.fee && k.freeFrom ? k.freeFrom - n : 0;
-  return `<header class="kp-h"><button class="rbtn" data-act="back" aria-label="Назад">${ic('left')}</button><h1>${esc(k.name)}</h1><a class="rbtn" href="tel:${k.phone.replace(/\s/g, '')}" aria-label="Позвонить">${ic('phone', 19)}</a></header>
-  <p class="kp-meta"><span class="rate">${k.rating}</span> · ${TYPES[k.type].short} · ${esc(k.addr)}</p>
+  return `<p class="kp-meta"><span class="rate">${k.rating}</span> · ${TYPES[k.type].short} · ${esc(k.addr)}</p>
   <div class="kp-tags">${m.published ? dueTag(k) : ''}<span class="tagc">${ic('truck', 14)}${k.dFrom}–${k.dTo}${fee ? ', ' + fee + ' сом' : ''}</span>${fee ? '' : `<span class="tagc ok">бесплатно</span>`}${peopleTag(n)}</div>
   ${can && need > 0 ? `<p class="kp-free">Ещё ${need} ${pl(need, P_ORD)} с вашей точки — доставка бесплатно</p>` : ''}
   ${m.published && m.note ? `<p class="kp-note">${esc(m.note)}</p>` : ''}

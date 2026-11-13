@@ -31,8 +31,7 @@ function kProfile(k) {
     )
     .join(
       ''
-    )}<label class="fld"><small>Мин. заказ, сом</small><input type="number" inputmode="numeric" min="0" step="50" value="${k.def.min}" data-chg="kdef" data-f="min"></label></div></section>
-  <section class="card"><label class="fld"><small>Демо: другое заведение</small><select data-chg="kid">${KITCHENS.map(x => `<option value="${x.id}" ${x.id === k.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label></section>`;
+    )}<label class="fld"><small>Мин. заказ, сом</small><input type="number" inputmode="numeric" min="0" step="50" value="${k.def.min}" data-chg="kdef" data-f="min"></label></div></section>`;
 }
 C.kf = (d, el) => {
   const k = kitchen(S.kid);

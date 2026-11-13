@@ -45,8 +45,7 @@ function cHome() {
     st = pointStats(p.id),
     list = KITCHENS.filter(k => S.typeFilter === 'all' || k.type === S.typeFilter);
   const top = KITCHENS.filter(k => st.by[k.id]).sort((a, b) => st.by[b.id] - st.by[a.id]);
-  return `<header class="top">${addrBtn(p)}</header>
-  ${
+  return `${
     st.total
       ? `<button class="peers" data-act="tab" data-tab="map"><span class="stack">${top
           .slice(0, 5)

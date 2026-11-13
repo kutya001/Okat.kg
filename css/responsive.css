@@ -71,52 +71,9 @@
     display: flex;
     flex-direction: column;
   }
-  .tabbar:not(.k-tabbar) {
-    position: sticky;
-    top: var(--demo-h);
-    bottom: auto;
-    left: auto;
-    transform: none;
-    max-width: none;
-    width: 100%;
-    min-height: 56px;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 4px;
-    padding: 0 max(24px, calc((100% - 1160px) / 2 + 24px));
-    background: var(--bg);
-    box-shadow: none;
-    backdrop-filter: none;
-  }
-  .tabbar:not(.k-tabbar) button {
-    flex: none;
-    flex-direction: row;
-    gap: 8px;
-    padding: 0 14px;
-    height: 40px;
-    border-radius: 999px;
-    font-size: 14.5px;
-    color: var(--ink2);
-  }
-  .tabbar:not(.k-tabbar) button.on {
-    background: var(--card);
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .tabbar:not(.k-tabbar) .bdg {
-    position: static;
-  }
-  .nav-logo {
-    display: block !important;
-    margin-right: auto;
-    font-weight: 800;
-    font-size: 21px;
-    letter-spacing: -0.03em;
-    color: var(--accent);
-  }
   .c-shell {
     max-width: 1160px;
-    padding: 0 24px 48px;
+    padding: 0 24px calc(var(--tab-h) + 40px);
   }
   .c-shell.narrow {
     max-width: 640px;
@@ -132,10 +89,6 @@
     grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 12px;
   }
-  .mapwrap {
-    height: calc(100vh - var(--demo-h) - 56px);
-  }
-  .kp-h,
   .tabs,
   .c-shell > .chips {
     margin-left: 0;
@@ -143,11 +96,11 @@
     padding-left: 0;
     padding-right: 0;
   }
-  #toast {
-    bottom: 28px;
-  }
 }
 @media (min-width: 960px) {
+  body[data-role='kitchen'] #toast {
+    bottom: 28px;
+  }
   .only-m {
     display: none !important;
   }
@@ -163,9 +116,9 @@
     display: flex;
     flex-direction: column;
     position: sticky;
-    top: var(--demo-h);
-    height: calc(100vh - var(--demo-h));
-    padding: 8px 12px 16px;
+    top: 0;
+    height: 100vh;
+    padding: 16px 12px 16px;
   }
   .k-id {
     display: flex;
@@ -269,7 +222,7 @@
     border-radius: 20px;
     padding: 0 8px 2px;
     min-height: 200px;
-    max-height: calc(100vh - var(--demo-h) - 150px);
+    max-height: calc(100vh - var(--top-h) - 150px);
     overflow-y: auto;
     scrollbar-width: thin;
   }
@@ -409,19 +362,6 @@
   * {
     animation: none !important;
     transition: none !important;
-  }
-}
-/* на компьютере нижнего меню нет — корзина главной прижимается к низу окна */
-@media (min-width: 900px) {
-  .cartbar.home {
-    bottom: 0;
-    padding-bottom: 18px;
-  }
-  .c-shell:has(.cartbar.home) {
-    padding-bottom: 110px;
-  }
-  body:has(.cartbar) #toast {
-    bottom: 96px;
   }
 }
 /* лента блюд на широком экране — в несколько колонок */

@@ -1,7 +1,7 @@
 /* ---------- кабинет кухни: каркас ---------- */
 .k-shell {
-  min-height: calc(100vh - var(--demo-h));
-  min-height: calc(100dvh - var(--demo-h));
+  min-height: 100vh;
+  min-height: 100dvh;
   padding-bottom: calc(var(--tab-h) + 24px);
 }
 .k-side {
@@ -24,15 +24,8 @@
   font-weight: 800;
   letter-spacing: -0.03em;
 }
-.k-top small {
-  font-size: 13px;
-  color: var(--ink3);
-}
 .wseg {
   display: none;
-}
-.k-tabbar {
-  max-width: none;
 }
 .mseg,
 .vseg {
@@ -973,4 +966,33 @@ a.tel {
 }
 .rows.hist .row small {
   white-space: normal;
+}
+
+/* ---------- поиск, правка заявки, уточнение ---------- */
+.k-col {
+  min-width: 0;
+}
+.tix {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+.cat-h .cnt {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink3);
+  margin-left: 4px;
+}
+.tkt-ed {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn-ink);
+}
+.btn.amber {
+  background: var(--warn-soft);
+  color: var(--warn-ink);
 }

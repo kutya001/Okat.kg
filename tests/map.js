@@ -1,6 +1,6 @@
 'use strict';
 // Карта: настоящие тайлы, запасной провайдер, схема без сети; доска заказов на компьютере.
-const { URL, SHOTS, launch } = require('./lib/env.js');
+const { URL, SHOTS, launch, ui } = require('./lib/env.js');
 const tile = require('./lib/tile.js')();
 const assert = (c, m) => {
   if (!c) {
@@ -43,6 +43,7 @@ async function page(b, mode, vp) {
   const c = s => p.locator(s).first().click(),
     ev = f => p.evaluate(f);
   await p.screenshot({ path: out + 'v01-welcome.png' });
+  const U = ui(() => p);
   await c('[data-act=start][data-role=client]');
   await p.waitForTimeout(300);
   await p.screenshot({ path: out + 'v02-home.png', fullPage: true });
@@ -93,7 +94,7 @@ async function page(b, mode, vp) {
   await c('.map-top [data-act=type][data-t=cafe]');
   await p.waitForTimeout(300);
   assert((await p.locator('.lmap .leaflet-marker-icon').count()) === 2, 'A: type filter updates markers');
-  await c('[data-act=role][data-role=kitchen]');
+  await U.role('kitchen');
   await p.waitForTimeout(700);
   await p.screenshot({ path: out + 'v06-k-dash.png', fullPage: true });
   assert(
@@ -125,7 +126,7 @@ async function page(b, mode, vp) {
   await c('[data-act=mBack]');
   await c('.mseg [data-tab=dishes]');
   assert((await ev(() => S.ktab)) === 'dishes', 'A: dishes via segmented control');
-  await c('.k-top [data-tab=profile]');
+  await U.go('profile');
   assert((await ev(() => S.ktab)) === 'profile', 'A: profile via header button');
   console.log(p.errs.length ? 'ERRORS A: ' + p.errs.join(' | ') : 'A: no JS errors');
   // B. OSM отвечает 403 -> запасной сервер

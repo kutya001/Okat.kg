@@ -16,6 +16,7 @@ const ICONS = {
   right: '<path d="m9 6 6 6-6 6"/>',
   left: '<path d="m15 6-6 6 6 6"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
   sort: '<path d="M4 7h16M7 12h10M10 17h4"/>',
   side: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>',
   down: '<path d="m6 9 6 6 6-6"/>',
