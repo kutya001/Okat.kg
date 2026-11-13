@@ -152,6 +152,7 @@ A.ktab = d => {
 };
 A.kw = d => {
   S.kw = d.w;
+  saveUi();
   render();
 };
 A.kst = d => {

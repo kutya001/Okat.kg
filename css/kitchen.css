@@ -934,3 +934,43 @@ a.tel {
   background: var(--ink);
   color: #fff;
 }
+
+/* ---------- клиенты ---------- */
+.ctbl td small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--ink3);
+}
+.ctbl td:first-child b {
+  font-weight: 600;
+}
+.ctbl tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.ctbl tbody tr:hover {
+  background: var(--fill);
+}
+.ctbl th:nth-child(2),
+.ctbl td:nth-child(2),
+.ctbl th:last-child,
+.ctbl td:last-child {
+  text-align: left;
+}
+.ctbl td:last-child {
+  white-space: normal;
+}
+.kcl-bar .dq {
+  min-height: 42px;
+  border-radius: 13px;
+}
+.kcl-bar .dq input {
+  min-height: 42px;
+  font-size: 15px;
+}
+.rows.hist {
+  margin-top: 0;
+}
+.rows.hist .row small {
+  white-space: normal;
+}

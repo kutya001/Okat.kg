@@ -29,7 +29,7 @@ SHEETS.cdish = () => {
     cell = (v, u, l) => (v == null ? '' : `<div><b>${v}${u}</b><small>${l}</small></div>`);
   return `<div class="ds-ph">${ph(d)}</div>
   <h2 class="ds-n">${esc(d.name)}</h2>
-  <p class="ds-meta">${[d.w, esc(k.name)].filter(Boolean).join(' · ')}</p>
+  <button class="ds-k" data-act="openK" data-id="${k.id}"><span class="ava">${k.em}</span><span><b>${esc(k.name)}</b><small>${[d.w, distTxt(distM(point(S.me.pointId), k))].filter(Boolean).join(', ')}</small></span><i class="rate">${k.rating}</i>${ic('right', 18)}</button>
   ${d.desc ? `<p class="ds-desc">${esc(d.desc)}</p>` : ''}
   ${nut ? `<div class="nutr" aria-label="На порцию">${cell(d.kcal, '', 'ккал')}${cell(d.p, ' г', 'белки')}${cell(d.f, ' г', 'жиры')}${cell(d.c, ' г', 'углеводы')}</div>` : ''}
   ${d.tags && d.tags.length ? `<div class="ds-tags">${d.tags.map(t => `<span class="tagc ok">${TAGS[t]}</span>`).join('')}</div>` : ''}
@@ -65,5 +65,5 @@ function cKitchen(id) {
           .join('')}</div></section>`
     )
     .join('')}
-  ${can && cnt ? `<div class="cartbar">${total < k.min ? `<div class="cartbtn off">Ещё ${som(k.min - total)} до заказа</div>` : `<button class="cartbtn" data-act="checkout" data-id="${id}"><span class="q">${cnt}</span><span class="cb-l">Корзина</span><span>${som(total)}</span></button>`}</div>` : ''}`;
+  ${can && cnt ? `<div class="cartbar">${total < minFor(k) ? `<div class="cartbtn off">Ещё ${som(minFor(k) - total)} до заказа</div>` : `<button class="cartbtn" data-act="checkout" data-id="${id}"><span class="q">${cnt}</span><span class="cb-l">Корзина</span><span>${som(total)}</span></button>`}</div>` : ''}`;
 }

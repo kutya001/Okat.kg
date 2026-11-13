@@ -229,7 +229,13 @@ const assert = (c, m) => {
   await c('.tabbar [data-tab=profile]');
   await c('[data-sheet=points]');
   await c('[data-act=setPoint][data-id=p4]');
-  assert((await ev(() => pointStats(S.me.pointId).total)) === 7, 'p4 shows its own 7 only');
+  assert(
+    (await ev(() => {
+      const own = ORDERS.filter(o => o.day === 0 && o.pointId === 'p4' && isActive(o)).length;
+      return S.me.pointId === 'p4' && own > 0 && pointStats('p4').total === own && own < pointStats('p1').total;
+    })) === true,
+    'p4 shows only its own orders'
+  );
   // map drag does not select, tap selects
   await c('.tabbar [data-tab=map]');
   await p.waitForTimeout(200);

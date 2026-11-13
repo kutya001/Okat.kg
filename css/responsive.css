@@ -424,3 +424,75 @@
     bottom: 96px;
   }
 }
+/* лента блюд на широком экране — в несколько колонок */
+@media (min-width: 900px) {
+  .dfeed {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 12px;
+  }
+  .dsearch {
+    max-width: 560px;
+  }
+}
+/* кабинет: левая панель сворачивается до значков */
+@media (min-width: 960px) {
+  .k-shell {
+    transition: grid-template-columns 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .k-side {
+    overflow: hidden;
+  }
+  .k-nav,
+  .k-prev {
+    position: relative;
+    white-space: nowrap;
+  }
+  .k-nav span,
+  .k-prev span,
+  .k-id b {
+    overflow: hidden;
+    transition: opacity 0.15s;
+  }
+  .k-fold {
+    margin-top: 2px;
+  }
+  body[data-ks='mini'] .k-shell {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  body[data-ks='mini'] .k-nav span,
+  body[data-ks='mini'] .k-prev span,
+  body[data-ks='mini'] .k-id b {
+    width: 0;
+    opacity: 0;
+  }
+  body[data-ks='mini'] .k-nav,
+  body[data-ks='mini'] .k-prev {
+    gap: 0;
+    padding: 0;
+    justify-content: center;
+  }
+  body[data-ks='mini'] .k-id {
+    gap: 0;
+    padding: 0 0 14px;
+    justify-content: center;
+  }
+  body[data-ks='mini'] .k-nav .bdg {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    margin: 0;
+  }
+  body[data-ks='mini'] .k-fold svg {
+    transform: scaleX(-1);
+  }
+  .kpis.k4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .kcl-bar .dq {
+    flex: 1;
+    max-width: 420px;
+  }
+  .kcl-bar .selw {
+    min-width: 200px;
+  }
+}

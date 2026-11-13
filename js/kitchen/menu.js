@@ -93,7 +93,9 @@ function kMenuDoc(k, m) {
         ([f, l]) =>
           `<label class="fld"><small>${l}</small><input type="time" value="${m[f]}" data-chg="mtime" data-f="${f}" ${dis}></label>`
       )
-      .join('')}</div>
+      .join(
+        ''
+      )}<label class="fld"><small>Мин. заказ, сом</small><input type="number" inputmode="numeric" min="0" step="50" value="${m.min}" data-chg="mmin" ${dis}></label></div>
     <div class="ae-f">${past ? '' : `<button class="btn main ${m.published ? 'sec' : 'pri'}" data-act="mpub" ${m.items.length ? '' : 'disabled'}>${m.published ? 'Снять' : 'Опубликовать'}</button>`}<button class="btn sec" data-act="mCopy" data-d="${m.day}" ${m.items.length ? '' : 'disabled'}>${ic('copy', 18)}На ${shortDay(copyTarget(m.day))}</button><button class="btn sec ico" data-act="sheet" data-sheet="wa" title="Текст для WhatsApp" aria-label="Текст для WhatsApp" ${m.items.length ? '' : 'disabled'}>${ic('chat', 18)}</button>${live ? `<button class="btn sec ico" data-act="preview" title="Вид клиента" aria-label="Вид клиента">${ic('eye', 18)}</button>` : ''}</div>
   </section>
   <div class="k-tools"><span class="muted">${m.items.length ? `${m.items.length} ${pl(m.items.length, P_DISH)}, ${pn.p} ${pl(pn.p, P_POR)}, ≈ ${som(pn.r)}` : ''}</span>${past ? '' : `<button class="btn pri sm" data-act="sheet" data-sheet="madd">${ic('plus', 18)}Блюдо</button>`}</div>
@@ -153,6 +155,13 @@ C.mtime = (d, el) => {
   if (!el.value) return;
   m[d.f] = el.value;
   if (m.day === 0) kitchen(S.kid)[d.f] = el.value;
+  render();
+};
+C.mmin = (d, el) => {
+  const m = curMenu();
+  m.min = Math.max(0, Math.round(+el.value || 0));
+  if (m.day === 0) kitchen(S.kid).min = m.min;
+  toast(m.min ? `Минимальный заказ: ${som(m.min)}` : 'Без минимальной суммы');
   render();
 };
 A.mpub = () => {

@@ -12,6 +12,7 @@ A.type = d => {
   render();
 };
 A.openK = d => {
+  S.sheet = null;
   S.cview = { kind: 'kitchen', id: d.id };
   S.map.sel = null;
   render();

@@ -63,6 +63,8 @@ const MON = [
   'декабря',
 ];
 const dateLong = d => d.getDate() + ' ' + MON[d.getMonth()];
+/* день относительно сегодня: «сегодня», «вчера» или дата */
+const dayShort = off => (off === 0 ? 'сегодня' : off === -1 ? 'вчера' : dateLong(dayDate(off)));
 /* читает выбранную картинку, уменьшает до max пикселей по длинной стороне и отдаёт как data-URL */
 function readImage(file, max, done, fail) {
   if (!file) return;

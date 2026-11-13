@@ -10,6 +10,7 @@ const mkMenu = (k, day, src) => ({
   to: k.def.to,
   dFrom: k.def.dFrom,
   dTo: k.def.dTo,
+  min: k.def.min,
   items: [],
   ...src,
 });
@@ -19,7 +20,8 @@ KITCHENS.forEach(k => {
     to: k.to,
     dFrom: k.dFrom,
     dTo: k.dTo,
-  }; /* время по умолчанию для новых меню; k.from/k.to… — время сегодняшнего меню */
+    min: k.min,
+  }; /* значения по умолчанию для новых меню; k.from, k.to, k.min… — значения сегодняшнего меню */
   const all = DISHES.filter(d => d.kid === k.id),
     skip = k.id === 'k1' ? ['k1d3', 'k1d7'] : [],
     it = d => ({ dishId: d.id, price: d.price, limit: LIM[d.cat] });
@@ -35,3 +37,5 @@ KITCHENS.forEach(k => {
     o[d] = mkMenu(k, d, { published: true, items: all.filter((x, i) => (i - d) % 4 !== 0).map(it) });
   }
 });
+/* минимальная сумма заказа на сегодня: берётся из сегодняшнего меню */
+const minFor = k => (MENU[k.id].today && MENU[k.id].today.min != null ? MENU[k.id].today.min : k.min);

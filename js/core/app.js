@@ -44,6 +44,7 @@ function render(opt = {}) {
   for (const k in LM) LM[k].el.remove();
   document.body.dataset.role = S.started ? S.role : 'welcome';
   document.body.dataset.kw = S.kw;
+  document.body.dataset.ks = S.kside;
   FX.dir = same ? '' : opt.back || depth < lastDepth ? 'back' : depth > lastDepth ? 'fwd' : '';
   morph($('#app'), !S.started ? welcome() : demoBar() + (S.role === 'client' ? clientApp() : kitchenApp()));
   renderSheet();

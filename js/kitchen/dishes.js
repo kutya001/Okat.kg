@@ -26,6 +26,7 @@ SHEETS.dish = () => {
    <div class="f2"><label class="fld"><small>Себестоимость</small><input name="cost" type="number" inputmode="numeric" min="0" value="${d.cost}" data-inp="dishCalc"></label>
    <label class="fld"><small>Цена</small><input name="price" type="number" inputmode="numeric" min="0" value="${d.price}" data-inp="dishCalc"></label></div>
    <p class="calc ${d.price > d.cost ? '' : 'bad'}" id="dishCalc">${calcTxt(d.price, d.cost)}</p>
+   <label class="fld"><small>Вид блюда</small><input name="kind" value="${esc(d.kind || '')}" list="kindList" placeholder="${esc(d.name ? autoKind(d.name) : 'Плов, лагман, суп')}" maxlength="30"><datalist id="kindList">${[...new Set([...KINDS.map(k => k[0]), ...DISHES.map(kindOf)])].map(x => `<option value="${esc(x)}">`).join('')}</datalist></label>
    <label class="fld"><small>Описание</small><textarea name="desc" rows="2" placeholder="Из чего сделано, как подаётся">${esc(d.desc || '')}</textarea></label>
    <div class="f4" role="group" aria-label="На порцию">${num('kcal', 'Ккал', '520')}${num('p', 'Белки, г', '26')}${num('f', 'Жиры, г', '18')}${num('c', 'Углеводы, г', '62')}</div>
    <div class="pays" role="group" aria-label="Метки">${Object.entries(TAGS)
@@ -114,6 +115,7 @@ A.dishSave = () => {
     em: S.sheet.em,
     img: S.sheet.img || '',
     desc: f.desc.value.trim(),
+    kind: f.kind.value.trim(),
     ...nut,
     tags: S.sheet.tags.filter(t => TAGS[t]),
   };

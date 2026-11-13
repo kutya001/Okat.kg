@@ -35,8 +35,8 @@ function homeCart() {
   if (!k) return '';
   const total = cartSum(id);
   return `<div class="cartbar home">${
-    total < k.min
-      ? `<button class="cartbtn off" data-act="openK" data-id="${id}">Ещё ${som(k.min - total)} до заказа</button>`
+    total < minFor(k)
+      ? `<button class="cartbtn off" data-act="openK" data-id="${id}">Ещё ${som(minFor(k) - total)} до заказа</button>`
       : `<button class="cartbtn" data-act="checkout" data-id="${id}"><span class="q">${cartCnt(id)}</span><span class="cb-l">${esc(k.name)}</span><span>${som(total)}</span></button>`
   }</div>`;
 }

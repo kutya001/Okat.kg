@@ -10,7 +10,6 @@ function kProfile(k) {
     <label class="fld"><small>Телефон</small><input type="tel" value="${esc(k.phone)}" data-chg="kf" data-f="phone"></label>
     <label class="fld"><small>Доставка, сом</small><input type="number" inputmode="numeric" min="0" step="10" value="${k.fee}" data-chg="kf" data-f="fee"></label>
     <label class="fld"><small>Бесплатно от заказов на точку</small><input type="number" inputmode="numeric" min="0" value="${k.freeFrom}" data-chg="kf" data-f="freeFrom"></label>
-    <label class="fld"><small>Минимальный заказ, сом</small><input type="number" inputmode="numeric" min="0" step="50" value="${k.min}" data-chg="kf" data-f="min"></label>
     <div class="fld"><small>Оплата</small><div class="checks">${Object.entries(PAY)
       .map(
         ([id, p]) =>
@@ -20,7 +19,7 @@ function kProfile(k) {
     <label class="fld"><small>Номер для переводов</small><input type="tel" value="${esc(k.payTo.num)}" data-chg="kpayTo" data-f="num"></label>
     <label class="fld"><small>Получатель</small><input value="${esc(k.payTo.name)}" data-chg="kpayTo" data-f="name" placeholder="Как в банковском приложении"></label>
   </div></section>
-  <section class="card"><div class="card-h"><h2>Время для новых меню</h2></div><div class="ae-row" style="margin:0">${[
+  <section class="card"><div class="card-h"><h2>Для новых меню</h2></div><div class="ae-row" style="margin:0">${[
     ['from', 'Заявки с'],
     ['to', 'до'],
     ['dFrom', 'Доставка с'],
@@ -30,14 +29,14 @@ function kProfile(k) {
       ([f, l]) =>
         `<label class="fld"><small>${l}</small><input type="time" value="${k.def[f]}" data-chg="kdef" data-f="${f}"></label>`
     )
-    .join('')}</div></section>
+    .join(
+      ''
+    )}<label class="fld"><small>Мин. заказ, сом</small><input type="number" inputmode="numeric" min="0" step="50" value="${k.def.min}" data-chg="kdef" data-f="min"></label></div></section>
   <section class="card"><label class="fld"><small>Демо: другое заведение</small><select data-chg="kid">${KITCHENS.map(x => `<option value="${x.id}" ${x.id === k.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label></section>`;
 }
 C.kf = (d, el) => {
   const k = kitchen(S.kid);
-  k[d.f] = ['fee', 'freeFrom', 'min'].includes(d.f)
-    ? Math.max(0, Math.round(+el.value || 0))
-    : el.value.trim() || k[d.f];
+  k[d.f] = ['fee', 'freeFrom'].includes(d.f) ? Math.max(0, Math.round(+el.value || 0)) : el.value.trim() || k[d.f];
   toast('Сохранено');
   render();
 };
@@ -48,10 +47,9 @@ C.kpayTo = (d, el) => {
   render();
 };
 C.kdef = (d, el) => {
-  if (el.value) {
-    kitchen(S.kid).def[d.f] = el.value;
-    toast('Сохранено');
-  }
+  if (!el.value) return;
+  kitchen(S.kid).def[d.f] = d.f === 'min' ? Math.max(0, Math.round(+el.value || 0)) : el.value;
+  toast('Сохранено');
 };
 C.kpay = (d, el) => {
   const k = kitchen(S.kid);

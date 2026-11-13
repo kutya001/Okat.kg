@@ -18,7 +18,7 @@ function orderCard(o) {
     acts = [];
   if (o.day < 0 || o.status === 'delivered' || off) {
     acts.push(`<button class="btn sm sec" data-act="again" data-id="${o.id}">${ic('repeat', 16)}Повторить</button>`);
-    return `<article class="ord past"><div class="o-h"><h3>${esc(k.name)}</h3><span>${o.day < 0 ? 'вчера' : OST[o.status].toLowerCase()}</span></div>${off && o.reason ? `<p class="o-why">${esc(o.reason)}</p>` : ''}<p class="o-items">${items}</p><div class="o-f"><b>${som(o.total)}</b><div class="acts">${acts.join('')}</div></div></article>`;
+    return `<article class="ord past"><div class="o-h"><h3>${esc(k.name)}</h3><span>${o.day < 0 ? dayShort(o.day) : OST[o.status].toLowerCase()}</span></div>${off && o.reason ? `<p class="o-why">${esc(o.reason)}</p>` : ''}<p class="o-items">${items}</p><div class="o-f"><b>${som(o.total)}</b><div class="acts">${acts.join('')}</div></div></article>`;
   }
   const bad = o.check === 'bad';
   if (o.receipt)
@@ -46,10 +46,12 @@ function orderCard(o) {
   </article>`;
 }
 function cOrders() {
+  const seg = `<div class="mseg"><button class="${S.otab === 'list' ? 'on' : ''}" data-act="otab" data-t="list">Заказы</button><button class="${S.otab === 'stats' ? 'on' : ''}" data-act="otab" data-t="stats">Статистика</button></div>`;
+  if (S.otab === 'stats') return `<h1 class="page-h">Заказы</h1>${seg}${cStats()}`;
   const mine = ORDERS.filter(o => o.clientId === 'me').sort((a, b) => b.day - a.day || b.num - a.num);
   const live = mine.filter(o => o.day === 0 && OFLOW.indexOf(o.status) >= 0 && o.status !== 'delivered'),
     past = mine.filter(o => !live.includes(o));
-  return `<h1 class="page-h">Заказы</h1>
+  return `<h1 class="page-h">Заказы</h1>${seg}
   ${live.length ? live.map(orderCard).join('') : `<div class="blank"><div class="blank-em">🍽️</div><b>Сегодня заказов нет</b><button class="btn pri" data-act="tab" data-tab="home">Выбрать обед</button></div>`}
   ${past.length ? `<h2 class="sub-h">История</h2>${past.map(orderCard).join('')}` : ''}`;
 }

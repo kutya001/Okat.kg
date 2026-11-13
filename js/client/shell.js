@@ -8,8 +8,8 @@ function clientApp() {
     cls = '';
   } else if (S.cview && S.cview.kind === 'checkout') body = cCheckout(S.cview.id);
   else {
-    body = { home: cHome, map: cMap, orders: cOrders, profile: cProfile }[S.ctab]();
-    cls = S.ctab === 'map' ? 'is-map' : S.ctab === 'home' ? '' : 'narrow';
+    body = { home: cHome, dishes: cDishes, map: cMap, orders: cOrders, profile: cProfile }[S.ctab]();
+    cls = S.ctab === 'map' ? 'is-map' : ['home', 'dishes'].includes(S.ctab) ? '' : 'narrow';
   }
   return `<div class="c-app">${S.cview ? '' : cNav()}<div class="c-shell ${cls} ${S.cview ? 'detail' : ''}" data-key="${viewKey()}">${body}</div></div>`;
 }
@@ -19,7 +19,7 @@ function cNav() {
   ).length;
   const t = (id, i, l, b) =>
     `<button class="${S.ctab === id ? 'on' : ''}" data-act="tab" data-tab="${id}" ${S.ctab === id ? 'aria-current="page"' : ''}>${ic(i, 23)}<span>${l}</span>${b ? `<i class="bdg">${b}</i>` : ''}</button>`;
-  return `<nav class="tabbar" aria-label="Разделы"><span class="nav-logo">Okat</span>${t('home', 'home', 'Главная')}${t('map', 'map', 'Карта')}${t('orders', 'receipt', 'Заказы', act)}${t('profile', 'user', 'Профиль')}</nav>`;
+  return `<nav class="tabbar" aria-label="Разделы"><span class="nav-logo">Okat</span>${t('home', 'store', 'Заведения')}${t('dishes', 'bowl', 'Блюда')}${t('map', 'map', 'Карта')}${t('orders', 'receipt', 'Заказы', act)}${t('profile', 'user', 'Профиль')}</nav>`;
 }
 const addrBtn = p =>
   `<button class="addr" data-act="sheet" data-sheet="points" aria-label="Точка доставки: ${esc(p.name)}">${ic('pin', 20)}<b>${esc(p.name)}</b>${ic('down', 16)}</button>`;

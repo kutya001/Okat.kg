@@ -36,8 +36,8 @@ function cCheckout(id) {
   <div class="totals"><div><span>Блюда</span><b>${som(total)}</b></div><div><span>Доставка</span><b class="${fee ? '' : 'okc'}">${fee ? som(fee) : 'бесплатно'}</b></div></div>
   <p class="fine">${transfer ? 'Кухня проверит чек и примет заказ.' : 'Кухня подтвердит заявку — и она станет заказом.'}</p>
   <div class="cartbar">${
-    total < k.min
-      ? `<div class="cartbtn off">Ещё ${som(k.min - total)} до заказа</div>`
+    total < minFor(k)
+      ? `<div class="cartbtn off">Ещё ${som(minFor(k) - total)} до заказа</div>`
       : transfer && !S.co.receipt
         ? `<label class="cartbtn att">${ic('clip', 20)}Прикрепить чек<input type="file" accept="image/*" data-chg="coReceipt" hidden></label>`
         : `<button class="cartbtn" data-act="submit"><span class="cb-l">Отправить заявку</span><span>${som(total + fee)}</span></button>`

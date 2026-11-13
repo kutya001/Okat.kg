@@ -65,6 +65,18 @@ const path = URL,
     await c('[data-act=submit]');
     await ov('orders');
     await shot('orders');
+    await c('[data-act=otab][data-t=stats]');
+    await ov('stats');
+    await shot('stats');
+    await p.evaluate(() => window.scrollTo(0, 700));
+    await shot('stats-2');
+    await c('.tabbar [data-tab=dishes]');
+    await ov('dishes');
+    await shot('dishes');
+    await p.locator('.dq input').fill('плов');
+    await ov('dishes-search');
+    await shot('dishes-search');
+    await p.locator('.dq input').fill('');
     await c('.tabbar [data-tab=map]');
     await ov('map');
     await shot('map');
@@ -76,15 +88,28 @@ const path = URL,
     const nav = t =>
       desk
         ? c(`.k-side [data-tab=${t}]`)
-        : t === 'dishes'
-          ? c('.mseg [data-tab=dishes]')
+        : t === 'dishes' || t === 'clients'
+          ? c(`.mseg [data-tab=${t}]`)
           : t === 'profile'
             ? c('.k-top [data-tab=profile]')
             : c(`.k-tabbar [data-tab=${t}]`);
-    for (const t of ['orders', 'menu', 'dishes', 'reports', 'profile']) {
+    for (const t of ['orders', 'menu', 'dishes', 'reports', 'clients', 'profile']) {
       await nav(t);
       await ov('k-' + t);
       await shot('k-' + t);
+    }
+    await nav('reports');
+    await nav('clients');
+    await c('.ctbl tbody tr');
+    await ov('k-client');
+    await shot('k-client');
+    await c('[data-act=closeSheet]');
+    await p.waitForTimeout(250);
+    if (desk) {
+      await c('[data-act=kside]');
+      await ov('k-side-mini');
+      await shot('k-side-mini');
+      await c('[data-act=kside]');
     }
     await nav('orders');
     await c('.btn[data-act=rcpt]');
